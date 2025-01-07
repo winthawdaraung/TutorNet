@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PropTypes from "prop-types";
 import { NavbarMenu } from "../../../mockData/HomeNavbardata"; // ปรับ path ตามโครงสร้างไฟล์
-
+import { Link } from "react-router-dom";
 // คอมโพเนนต์ปุ่มที่มีการเปลี่ยนสีเมื่อคลิก
-const MenuButton = ({ title }) => {
+const MenuButton = ({ title, link }) => {
   // สถานะการคลิกปุ่ม
   const [isClicked, setIsClicked] = useState(false);
 
@@ -15,21 +15,24 @@ const MenuButton = ({ title }) => {
   };
 
   return (
-    <motion.button
-      whileTap={{ scale: 0.95 }} // เอฟเฟกต์ย่อขนาดเมื่อกด
-      onClick={handleClick}
-      className={`${
-        isClicked ? "text-yellow-300" : "text-white" // เปลี่ยนสีข้อความเมื่อคลิก
-      } bg-[#00BFA5] font-semibold rounded-full px-6 py-2 hover:bg-teal-600 transition-all duration-300`}
-    >
-      {title}
-    </motion.button>
+    <Link to={link}>
+      <motion.button
+        whileTap={{ scale: 0.95 }} // เอฟเฟกต์ย่อขนาดเมื่อกด
+        onClick={handleClick}
+        className={`${
+          isClicked ? "text-yellow-300" : "text-white" // เปลี่ยนสีข้อความเมื่อคลิก
+        } bg-[#00BFA5] font-semibold rounded-full px-6 py-2 hover:bg-teal-600 transition-all duration-300`}
+      >
+        {title}
+      </motion.button>
+    </Link>
   );
 };
 
 // เพิ่ม PropTypes สำหรับ MenuButton
 MenuButton.propTypes = {
   title: PropTypes.string.isRequired,
+  link: PropTypes.string.isRequired,
 };
 
 const ResponsiveMenu = ({ isOpen }) => {
@@ -46,7 +49,7 @@ const ResponsiveMenu = ({ isOpen }) => {
           <div className="text-xl font-semibold uppercase bg-[#00BFA5]/95 text-white p-6 md:p-10 m-4 md:m-6 rounded-3xl">
             <ul className="flex flex-col justify-center items-center gap-10">
               {NavbarMenu.map((item) => (
-                <MenuButton key={item.id} title={item.title} />
+                <MenuButton key={item.id} title={item.title} link={item.link} />
               ))}
             </ul>
           </div>

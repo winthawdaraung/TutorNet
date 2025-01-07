@@ -7,11 +7,11 @@ export const NavbarMenu = [
   {
     id: 2,
     title: "How it works",
-    link: "/",
+    link: "/howitworks",
   },
   {
     id: 3,
     title: "About Us",
-    link: "/",
+    link: "/about",
   },
 ];

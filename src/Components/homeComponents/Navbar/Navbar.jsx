@@ -4,6 +4,7 @@ import { SiStudyverse } from "react-icons/si";
 import { IoMenu } from "react-icons/io5";
 import { motion } from "framer-motion";
 import ResponsiveMenu from "./ResponsiveMenu";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isOpen, setIsopen] = React.useState(false);
@@ -33,12 +34,12 @@ const Navbar = () => {
               <ul className="flex items-center gap-6">
                 {NavbarMenu.map((item) => (
                   <li key={item.id}>
-                    <a
-                      href={item.link}
+                    <Link
+                      to="/"
                       className="inline-block text-black text-sm xl:text-base py-1 px-2 xl:px-3 hover:text-secondary transition-all duration-300"
                     >
                       {item.title}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
