@@ -68,13 +68,15 @@ const HowItWorks = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-16 px-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-24 pb-32">
+        {" "}
+        {/* Added container and increased padding */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-16 pt-16"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-[#1e293b] mb-6">
             How It Works
@@ -84,9 +86,8 @@ const HowItWorks = () => {
             learning journey.
           </p>
         </motion.div>
-
         <motion.div
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-12" // Increased gap
           variants={containerVariants}
           initial="hidden"
           animate="visible"
