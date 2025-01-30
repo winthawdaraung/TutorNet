@@ -4,15 +4,11 @@ import { SiStudyverse } from "react-icons/si";
 import { IoMenu } from "react-icons/io5";
 import { motion } from "framer-motion";
 import ResponsiveMenu from "./ResponsiveMenu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [isOpen, setIsopen] = React.useState(false);
-
-  // Handle button click
-  const handleClick = (buttonType) => {
-    alert(`${buttonType} button clicked!`);
-  };
+  const navigate = useNavigate(); 
 
   return (
     <>
@@ -50,14 +46,14 @@ const Navbar = () => {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 className="font-semibold text-black hover:text-teal-500 transition-all duration-300"
-                onClick={() => handleClick("Sign In")}
+                onClick={() => navigate("/login")}
               >
                 Sign in
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 className="text-white bg-[#00BFA5] font-semibold rounded-full px-6 py-2 hover:bg-teal-600 transition-all duration-300"
-                onClick={() => handleClick("Register")}
+                onClick={() => navigate("/register")}
               >
                 Register
               </motion.button>

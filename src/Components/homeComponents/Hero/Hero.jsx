@@ -1,8 +1,10 @@
-import React from "react";
 import HeroImg from "../../../assets/HeroImg.png";
 import { motion } from "framer-motion";
 import { slideRight } from "../../../utility/animation";
+import { useNavigate } from "react-router-dom";
+
 const Hero = () => {
+  const navigate = useNavigate();
   return (
     <>
       <div className="container grid grid-cols-1 md:grid-cols-2 min-h-[650px] relative">
@@ -41,7 +43,7 @@ const Hero = () => {
               animate="visible"
               className="flex gap-8 justify-center md:justify-start mt-8"
             >
-              <button className="primary-btn">Get Started Now</button>
+              <button className="primary-btn" onClick={() => navigate("/login")}>Get Started Now</button>
               <button className="secondary-btn">Join Our Community</button>
             </motion.div>
           </div>
