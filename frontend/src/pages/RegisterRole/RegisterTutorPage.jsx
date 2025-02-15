@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaEnvelope, FaLock, FaChalkboardTeacher } from "react-icons/fa";
+import { registerTutor } from "../../handle/tutor";
 
 const RegisterTutorPage = () => {
   const [formData, setFormData] = useState({
@@ -20,14 +21,19 @@ const RegisterTutorPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     if (!acceptTerms) {
       setShowAlert(true); // ❌ ถ้าไม่ได้ติ๊ก checkbox ให้แสดง Alert
       return;
     }
-    alert(`Tutor Registered: ${JSON.stringify(formData)}`);
-    navigate("/login");
+    const response = await registerTutor(formData);
+    if (response.success) {   
+        alert("Tutor Registered Successfully");
+        navigate("/login");
+    } else {
+        alert(response.error);
+    }
   };
 
   return (

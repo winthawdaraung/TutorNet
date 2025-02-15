@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaUser, FaEnvelope, FaLock, FaGraduationCap, FaIdCard, FaChevronDown } from "react-icons/fa";
+import { registerStudent } from "../../handle/student";
 
 const RegisterStudentPage = () => {
   const [formData, setFormData] = useState({
@@ -28,15 +29,24 @@ const RegisterStudentPage = () => {
     setIsDropdownOpen(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!acceptTerms) {
       setShowAlert(true); // ✅ เปิด Alert Modal ถ้าไม่ได้ติ๊ก Terms & Conditions
       return;
     }
-    alert(`Student Registered: ${JSON.stringify(formData)}`);
-    navigate("/login");
+    
+    // alert(`Student Registered: ${JSON.stringify(formData)}`);
+    
+    const response = await registerStudent(formData);
+    if (response.success) {   
+        alert("Student Registered Successfully");
+        navigate("/login");
+    } else {
+        alert(response.error);
+    }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
