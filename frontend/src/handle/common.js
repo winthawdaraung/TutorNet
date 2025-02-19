@@ -36,4 +36,14 @@ export const logout = async () => {
     }
 };
 
+export const googleLogin = async () => {
+    try {
+        const response = await fetch(`/api/google-login`, { method: "POST" });
+        return response.json();
+    } catch (error) {
+        console.error("Error logging in with Google", error);
+        return { success: false, error: error.message };
+    }
+}
+
 
