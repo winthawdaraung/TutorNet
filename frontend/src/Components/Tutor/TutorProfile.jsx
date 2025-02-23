@@ -1,9 +1,11 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import tutorProfileData from "../../mockData/TutorProfileData";
-import { Link } from "react-router-dom";
 import defaultProfile from "../../assets/tutor/defaultProfile.png";
 
 function TutorProfile() {
+  const navigate = useNavigate();
+
   const {
     fullName,
     institution,
@@ -21,17 +23,19 @@ function TutorProfile() {
     priceRate, // New property
   } = tutorProfileData;
 
-  // star rating renderer
+  // Navigate to edit profile page when clicking the button
+  const handleEditProfile = () => {
+    navigate("/tutor/edit-profile");
+    window.scrollTo(0, 0); // เลื่อนขึ้นบนสุดของหน้า
+  };
+
+  // Star rating renderer
   const renderStars = (count) => {
-    const stars = [];
-    for (let i = 0; i < count; i++) {
-      stars.push(
-        <span key={i} className="text-yellow-500">
-          ★
-        </span>
-      );
-    }
-    return stars;
+    return [...Array(count)].map((_, i) => (
+      <span key={i} className="text-yellow-500">
+        ★
+      </span>
+    ));
   };
 
   // Function to render the availability table
@@ -104,17 +108,14 @@ function TutorProfile() {
               <p className="text-gray-600">
                 {qualification}, {institution}
               </p>
-              {/* Rating and Reviews */}
               <div className="flex items-center mt-2">
                 <div className="mr-2">{renderStars(rating)}</div>
                 <span className="text-gray-600 text-sm">
                   ({reviewsCount} reviews)
                 </span>
               </div>
-              {/* Price Rate */}
               <div className="mt-2">
                 <p className="text-teal-500 font-bold text-xl">
-                  {" "}
                   {priceRate}฿ per hour
                 </p>
               </div>
@@ -133,7 +134,7 @@ function TutorProfile() {
             <p className="text-gray-700">{aboutMySession}</p>
           </div>
 
-          {/* CV Section: Display CV Image Directly */}
+          {/* CV Section */}
           <div className="mb-4">
             <h2 className="text-xl font-semibold mb-1">CV</h2>
             {cv ? (
@@ -190,11 +191,12 @@ function TutorProfile() {
 
           {/* Edit Profile Button */}
           <div className="mt-6">
-            <Link to="/edit-profile">
-              <button className="bg-teal-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
-                Edit my profile
-              </button>
-            </Link>
+            <button
+              onClick={handleEditProfile}
+              className="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition"
+            >
+              Edit my profile
+            </button>
           </div>
         </div>
       </div>

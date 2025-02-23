@@ -2,7 +2,6 @@ import React from "react";
 import TutorNavbar from "../../components/Tutor/TutorNavbar";
 import TutorNotification from "../../components/Tutor/TutorNotification";
 import Footer from "../../components/homeComponents/footer/footer";
-
 function TutorNotificationPage() {
   return (
     <>
