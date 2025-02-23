@@ -14,7 +14,10 @@ import ResetPassword from "./pages/ResetPassword";
 import StudentSearchPage from "./pages/Student/StudentSearchPage";
 import StudentSearchResultPage from "./pages/Student/StudentSearchResultPage";
 
+import TutormyProfilePage from "./pages/Tutor/Tutormyprofilepage";
+import TutorEditProfile from "./pages/Tutor/Tutoreditmyprofilepage";
 
+import TutorNotificationPage from "./pages/Tutor/Tutornotificationpage";
 
 function App() {
   return (
@@ -35,7 +38,18 @@ function App() {
 
         {/* 📌 หน้า Student */}
         <Route path="/student-search" element={<StudentSearchPage />} />
-        <Route path="/student-search-results" element={<StudentSearchResultPage />} />
+        <Route
+          path="/student-search-results"
+          element={<StudentSearchResultPage />}
+        />
+
+        {/* 📌 หน้า tutor */}
+        <Route path="/tutor-profile" element={<TutormyProfilePage />} />
+        <Route path="/tutor-edit-profile" element={<TutorEditProfile />} />
+        <Route
+          path="/tutor-notifications"
+          element={<TutorNotificationPage />}
+        />
       </Routes>
     </BrowserRouter>
   );
