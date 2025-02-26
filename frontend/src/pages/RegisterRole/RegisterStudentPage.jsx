@@ -109,7 +109,7 @@ const RegisterStudentPage = () => {
             <input
               type="text"
               name="university"
-              placeholder="Institution / University"
+              placeholder="University Name"
               className="w-full pl-10 pr-4 py-3 border rounded-full focus:ring-2 focus:ring-[#00BFA5] bg-gray-100"
               value={formData.university}
               onChange={handleChange}
