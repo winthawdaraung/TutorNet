@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import HowItWorks from "./pages/HowItWorks";
 import AboutUs from "./pages/AboutUs";
+import Community from "./pages/Community";
 
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -27,6 +28,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/howitworks" element={<HowItWorks />} />
         <Route path="/about" element={<AboutUs />} />
+        <Route path="/community" element={<Community />} />
 
         {/* Authentication */}
         <Route path="/login" element={<LoginPage />} />

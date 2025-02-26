@@ -43,8 +43,18 @@ const Hero = () => {
               animate="visible"
               className="flex gap-8 justify-center md:justify-start mt-8"
             >
-              <button className="primary-btn" onClick={() => navigate("/login")}>Get Started Now</button>
-              <button className="secondary-btn">Join Our Community</button>
+              <button
+                className="primary-btn"
+                onClick={() => navigate("/login")}
+              >
+                Get Started Now
+              </button>
+              <button
+                className="secondary-btn"
+                onClick={() => navigate("/community")}
+              >
+                Join Our Community
+              </button>
             </motion.div>
           </div>
         </div>
