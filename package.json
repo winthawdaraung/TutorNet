@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "TutorNet is a web-based platform developed as a school project for the Software Development Process (SDP) course at KMITL.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon backend/server.js",
@@ -28,6 +29,7 @@
     "google-auth-library": "^9.15.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "react-select": "^5.10.0"
   }
 }

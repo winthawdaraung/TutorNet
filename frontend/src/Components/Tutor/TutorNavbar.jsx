@@ -1,11 +1,21 @@
-import { Link, Routes, Route, useLocation } from "react-router-dom";
+import { Link, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { SiStudyverse } from "react-icons/si";
 import TutormyProfilePage from "../../pages/Tutor/Tutormyprofilepage";
 import TutorEditProfile from "../../pages/Tutor/Tutoreditmyprofilepage";
 import TutorNotificationPage from "../../pages/Tutor/Tutornotificationpage";
+import { logout } from "../../handle/common";
 
 const TutorNavbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    const response = await logout();
+    if (response.success) {
+      navigate("/login");
+    } else {
+      alert(response.error);
+    }
+  }
 
   return (
     <>
@@ -45,12 +55,12 @@ const TutorNavbar = () => {
               </Link>
             </li>
             <li>
-              <Link
-                to="/tutor/logout"
+              <button
+                onClick={handleLogout}
                 className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition duration-300"
               >
                 Log out
-              </Link>
+              </button>
             </li>
           </ul>
         </div>

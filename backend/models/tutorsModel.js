@@ -10,7 +10,12 @@ const tutorSchema = new mongoose.Schema({
     rating: { type: Number, default: 0 },
     reviews: { type: [String], default: [] },
     profilePicture: { type: String, default: "" },
-    role: { type: String, default: "tutor" }
+    bio: { type: String, default: "" },
+    aboutSession: { type: String, default: "" },
+    sessionsAvailable: { type: [String], default: [] },
+    notification : { type: [String], default: [] },
+    role: { type: String, default: "tutor" },
+    booking: { type: [String], default: [] },
 });
 
 const Tutor = mongoose.model("Tutor", tutorSchema);

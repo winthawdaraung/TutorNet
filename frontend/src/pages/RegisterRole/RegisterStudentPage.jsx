@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { FaSearch, FaBookOpen, FaGlobe, FaChalkboardTeacher } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { FaUser, FaEnvelope, FaLock, FaGraduationCap, FaIdCard, FaChevronDown } from "react-icons/fa";
-import { registerStudent } from "../../handle/student";
+import { motion } from "framer-motion";
 import StudentNavbar from "../../Components/Student/StudentNavbar/StudentNavbar";
 import Footer from "../../Components/homeComponents/footer/Footer";
 
@@ -11,37 +9,11 @@ const StudentSearchPage = () => {
   const [subject, setSubject] = useState("");
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSelectYear = (year) => {
-    setFormData({ ...formData, year });
-    setIsDropdownOpen(false);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!acceptTerms) {
-      setShowAlert(true); // ✅ เปิด Alert Modal ถ้าไม่ได้ติ๊ก Terms & Conditions
-      return;
-    }
-    
-    // alert(`Student Registered: ${JSON.stringify(formData)}`);
-    
-    const response = await registerStudent(formData);
-    if (response.success) {   
-        alert("Student Registered Successfully");
-        navigate("/login");
-    } else {
-        alert(response.error);
-    }
   const handleSearch = () => {
     if (subject.trim()) {
       navigate("/student-search-results");
     }
   };
-
 
   return (
     <motion.div
@@ -131,7 +103,6 @@ const StudentSearchPage = () => {
       <Footer />
     </motion.div>
   );
-};
 };
 
 export default StudentSearchPage;

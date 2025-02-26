@@ -1,10 +1,20 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { SiStudyverse } from "react-icons/si";
 import { IoNotificationsOutline } from "react-icons/io5";
+import { logout } from "../../../handle/common";
 
 const StudentNavbar = () => {
   const navigate = useNavigate();
   const location = useLocation(); // 📌 ดึง URL ปัจจุบัน
+
+  const handleLogout = async () => {
+    const response = await logout();
+    if (response.success) {
+      navigate("/login");
+    } else {
+      alert(response.error);
+    }
+  }
 
   return (
     <nav className="bg-white shadow-md py-4">
@@ -21,8 +31,7 @@ const StudentNavbar = () => {
             <Link
               to="/student-search"
               className={`transition-all duration-300 ${
-                location.pathname.startsWith("/student-search") ||
-                location.pathname.startsWith("/student-search-results")
+                location.pathname.startsWith("/student-search") || location.pathname.startsWith("/student-search-results")
                   ? "text-blue-600 font-bold"
                   : "hover:text-[#00BFA5]"
               }`}
@@ -39,9 +48,7 @@ const StudentNavbar = () => {
             <Link
               to="/profile"
               className={`transition-all duration-300 ${
-                location.pathname === "/student-profile"
-                  ? "text-blue-600 font-bold"
-                  : "hover:text-[#00BFA5]"
+                location.pathname === "/student-profile" ? "text-blue-600 font-bold" : "hover:text-[#00BFA5]"
               }`}
             >
               My Profile
@@ -50,8 +57,9 @@ const StudentNavbar = () => {
           <li>
             <button
               className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition duration-300"
-              onClick={() => navigate("/student-logout")}
-            >
+              // onClick={() => navigate("/student-logout")}
+              onClick={handleLogout}
+            > 
               Log out
             </button>
           </li>
