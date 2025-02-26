@@ -11,11 +11,15 @@ import RegisterStudentPage from "./pages/RegisterRole/RegisterStudentPage";
 import RegisterTutorPage from "./pages/RegisterRole/RegisterTutorPage";
 import ResetPassword from "./pages/ResetPassword";
 
-// 📌 Student Pages
+//Student Pages
 import StudentSearchPage from "./pages/Student/StudentSearchPage";
 import StudentSearchResultPage from "./pages/Student/StudentSearchResultPage";
+import StudentNotificationsPage from "./pages/Student/StudentNotificationsPage";
+import StudentViewTutorPage from "./pages/Student/StudentViewTutorPage";
+import StudentRequestPage from "./pages/Student/StudentRequestPage";
+import StudentProfile from "./pages/Student/StudentProfile";
 
-// 📌 Tutor Pages
+//Tutor Pages
 import TutormyProfilePage from "./pages/Tutor/Tutormyprofilepage";
 import TutorEditProfile from "./pages/Tutor/Tutoreditmyprofilepage";
 import TutorNotificationPage from "./pages/Tutor/Tutornotificationpage";
@@ -40,10 +44,11 @@ function App() {
 
         {/* Student Pages */}
         <Route path="/student-search" element={<StudentSearchPage />} />
-        <Route
-          path="/student-search-results"
-          element={<StudentSearchResultPage />}
-        />
+        <Route path="/student-search-results" element={<StudentSearchResultPage />} />
+        <Route path="/student-notifications" element={<StudentNotificationsPage />} />
+        <Route path="/student-request" element={<StudentRequestPage />} />
+        <Route path="/student-view-tutor-profile" element={<StudentViewTutorPage />} />
+        <Route path="/student-profile" element={<StudentProfile />} />
 
         {/* 📌 Tutor Pages (Navbar will be handled inside the pages themselves) */}
         <Route path="/tutor/profile" element={<TutormyProfilePage />} />
