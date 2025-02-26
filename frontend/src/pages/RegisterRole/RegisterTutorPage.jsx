@@ -9,9 +9,9 @@ const RegisterTutorPage = () => {
     fullName: "",
     email: "",
     password: "",
-    university: "",
-    subject: "",       // ✅ Added Subject
-    experience: "",    // ✅ Added Experience (Years)
+    institution: "",
+    subjectsOffered: [],
+    experience: 0,
   });
 
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -23,14 +23,32 @@ const RegisterTutorPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!acceptTerms) {
       setShowAlert(true);
       return;
     }
-    alert(`Tutor Registered: ${JSON.stringify(formData)}`);
-    navigate("/login");
+
+    const formattedData = {
+      ...formData,
+      subjectsOffered: formData.subject ? [formData.subject] : [],
+      experience: Number(formData.experience),
+    };
+
+    try {
+      const response = await registerTutor(formattedData);
+      if (response.success) {
+        navigate("/login");
+      } else {
+        setError(response.error);
+      }
+    } catch (error) {
+      console.error("Error registering tutor", error);
+      setError(error.message);
+    }
   };
 
   return (
@@ -93,21 +111,21 @@ const RegisterTutorPage = () => {
             />
           </div>
 
-          {/* University */}
+          {/* Institution - Fixed name attribute */}
           <div className="relative">
             <FaUniversity className="absolute left-3 top-4 text-gray-400" />
             <input
               type="text"
-              name="university"
-              placeholder="University Name"
+              name="institution"
+              placeholder="Institution Name"
               className="w-full pl-10 pr-4 py-3 border rounded-full focus:ring-2 focus:ring-[#00BFA5] bg-gray-100"
-              value={formData.university}
+              value={formData.institution}
               onChange={handleChange}
               required
             />
           </div>
 
-          {/* Subject - New Field ✅ */}
+          {/* Subjects - Fixed name attribute */}
           <div className="relative">
             <FaBook className="absolute left-3 top-4 text-gray-400" />
             <input

@@ -5,18 +5,22 @@ export const handleLogin = async (email, password) => {
             headers: {
                 "Content-Type": "application/json",
             },
+            credentials: "include", // Important for cookies
             body: JSON.stringify({ email, password }),  
         }); 
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            return { success: false, error: errorData.message || 'Login failed' };
-        }
-
         const data = await response.json();
         
+        if (!response.ok) {
+            return { success: false, error: data.message || 'Login failed' };
+        }
+
         if (data.success) {
-            return { success: true, data: data.user };
+            // Store token in localStorage for easy access
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('userData', JSON.stringify(data.user));
+            
+            return { success: true, user: data.user, token: data.token };
         } else {
             return { success: false, error: data.message };
         }
@@ -26,24 +30,39 @@ export const handleLogin = async (email, password) => {
     }
 };
 
-export const logout = async () => {
+export const handleLogout = async () => {
     try {
-        const response = await fetch(`/api/logout`, { method: "POST" });
-        return response.json();
+        const response = await fetch(`/api/logout`, { 
+            method: "POST",
+            credentials: "include", // Important for cookies
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
+        
+        const data = await response.json();
+        
+        // Clear token regardless of server response
+        localStorage.removeItem('token');
+        localStorage.removeItem('userData');
+        
+        return data;
     } catch (error) {
         console.error("Error logging out", error);
+        // Still remove token on error
+        localStorage.removeItem('token');
+        localStorage.removeItem('userData');
         return { success: false, error: error.message };
     }
 };
 
-export const googleLogin = async () => {
-    try {
-        const response = await fetch(`/api/google-login`, { method: "POST" });
-        return response.json();
-    } catch (error) {
-        console.error("Error logging in with Google", error);
-        return { success: false, error: error.message };
-    }
-}
+// Add a utility function to check if user is logged in
+export const isLoggedIn = () => {
+    return !!localStorage.getItem('token');
+};
 
-
+// Add a utility function to get current user data
+export const getCurrentUser = () => {
+    const userData = localStorage.getItem('userData');
+    return userData ? JSON.parse(userData) : null;
+};

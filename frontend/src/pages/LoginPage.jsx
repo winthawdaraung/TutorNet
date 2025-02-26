@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaUser, FaLock, FaGoogle } from "react-icons/fa";
 import { handleLogin } from "../handle/common";
+import { getTutorProfile } from "../handle/tutor";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -10,26 +11,29 @@ const LoginPage = () => {
   const [error, setError] = useState(""); // To handle login errors
   const navigate = useNavigate();
 
-  const handleSubmit = async () => {
-<<<<<<< HEAD
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setError("");
-=======
->>>>>>> 6530c1a9d3bf21bcc0aad46da460da934dceba97
+    
     try {
-      const { success, data } = await handleLogin(email, password);
-      if (!success) {
-        setError(data);
-      } else {
-        const response = data;
-          if (response.role === "student") {
-            navigate("/studentafterlogin");
-          } else if (response.role === "tutor") {
-            navigate("/tutorafterlogin");
-          } else {
-            setError("Invalid role.");
+      const result = await handleLogin(email, password);
+      
+      if (result.success) {
+        if (result.user.role === "tutor") {
+          // Fetch tutor profile after successful login
+          const profileResult = await getTutorProfile();
+          if (profileResult.success) {
+            // Store complete profile data
+            localStorage.setItem('tutorProfile', JSON.stringify(profileResult.data));
           }
+          navigate("/tutor/notifications");
+        } else if (result.user.role === "student") {
+          navigate("/studentafterlogin");
+        }
+      } else {
+        setError(result.error);
       }
-    } catch (error) { 
+    } catch (error) {
       console.error("Error logging in", error);
       setError("An error occurred during login. Please try again.");
     }
@@ -50,7 +54,7 @@ const LoginPage = () => {
 
         {error && <p className="text-red-500 mt-3">{error}</p>}
 
-        <form className="space-y-5 mt-6" onSubmit={(e) => e.preventDefault()}>
+        <form className="space-y-5 mt-6" onSubmit={handleSubmit}>
           <div className="relative">
             <FaUser className="absolute left-3 top-4 text-gray-400" />
             <input
@@ -89,7 +93,7 @@ const LoginPage = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="w-full py-3 bg-[#00BFA5] text-white font-semibold rounded-full hover:bg-teal-600 transition duration-300 shadow-md"
-            onClick={handleSubmit}
+            type="submit"
           >
             Sign In
           </motion.button>

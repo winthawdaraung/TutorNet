@@ -3,13 +3,14 @@ import { SiStudyverse } from "react-icons/si";
 import TutormyProfilePage from "../../pages/Tutor/Tutormyprofilepage";
 import TutorEditProfile from "../../pages/Tutor/Tutoreditmyprofilepage";
 import TutorNotificationPage from "../../pages/Tutor/Tutornotificationpage";
-import { logout } from "../../handle/common";
+import { handleLogout } from "../../handle/common";
 
 const TutorNavbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const handleLogout = async () => {
-    const response = await logout();
+
+  const handleSubmit = async () => {
+    const response = await handleLogout();
     if (response.success) {
       navigate("/login");
     } else {
@@ -56,7 +57,7 @@ const TutorNavbar = () => {
             </li>
             <li>
               <button
-                onClick={handleLogout}
+                onClick={handleSubmit}
                 className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition duration-300"
               >
                 Log out

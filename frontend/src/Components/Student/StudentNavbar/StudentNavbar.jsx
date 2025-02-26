@@ -1,14 +1,14 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { SiStudyverse } from "react-icons/si";
 import { IoNotificationsOutline } from "react-icons/io5";
-import { logout } from "../../../handle/common";
+import { handleLogout } from "../../../handle/common";
 
 const StudentNavbar = () => {
   const navigate = useNavigate();
   const location = useLocation(); // 📌 ดึง URL ปัจจุบัน
 
-  const handleLogout = async () => {
-    const response = await logout();
+  const handleSubmit = async () => {
+    const response = await handleLogout();
     if (response.success) {
       navigate("/login");
     } else {
@@ -58,7 +58,7 @@ const StudentNavbar = () => {
             <button
               className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition duration-300"
               // onClick={() => navigate("/student-logout")}
-              onClick={handleLogout}
+              onClick={handleSubmit}
             > 
               Log out
             </button>

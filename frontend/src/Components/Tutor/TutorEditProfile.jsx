@@ -1,25 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import tutorProfileData from "../../mockData/TutorProfileData";
+import tutorProfileDataMock from "../../mockData/TutorProfileData";
 import defaultProfile from "../../assets/tutor/defaultProfile.png";
+import { updateTutorProfile, getTutorProfile } from "../../handle/tutor";
+import { useNavigate } from "react-router-dom";
 
 function EditProfile() {
-  // Destructure data from your mock data
+  const navigate = useNavigate();
+  const [tutorProfileData, setTutorProfileData] = useState(tutorProfileDataMock);
+  
+  // Destructure tutorProfileData after initializing it
   const {
-    fullName,
-    institution,
-    qualification,
-    aboutMe,
-    aboutMySession,
-    priceRate,
-    contactEmail,
-    contactNumber,
-    profileImageUrl,
-    availability,
-    subjectsOffered,
+    fullName = "",
+    institution = "",
+    qualification = "",
+    aboutMe = "",
+    aboutMySession = "",
+    priceRate = 0,
+    contactEmail = "",
+    contactNumber = "",
+    profileImageUrl = "",
+    availability = {
+      monday: { morning: false, afternoon: false, evening: false },
+      tuesday: { morning: false, afternoon: false, evening: false },
+      wednesday: { morning: false, afternoon: false, evening: false },
+      thursday: { morning: false, afternoon: false, evening: false },
+      friday: { morning: false, afternoon: false, evening: false },
+      saturday: { morning: false, afternoon: false, evening: false },
+      sunday: { morning: false, afternoon: false, evening: false }
+    },
+    subjectsOffered = [{ subject: "", topic: "" }]
   } = tutorProfileData;
 
-  // State for basic form data
   const [formData, setFormData] = useState({
     fullName,
     institution,
@@ -42,8 +54,85 @@ function EditProfile() {
   const [cvPreview, setCVPreview] = useState(null);
 
   // State for availability and subjects
-  const [avail, setAvail] = useState(availability);
+  const [avail, setAvail] = useState({
+    mon: { morning: false, afternoon: false, evening: false },
+    tue: { morning: false, afternoon: false, evening: false },
+    wed: { morning: false, afternoon: false, evening: false },
+    thu: { morning: false, afternoon: false, evening: false },
+    fri: { morning: false, afternoon: false, evening: false },
+    sat: { morning: false, afternoon: false, evening: false },
+    sun: { morning: false, afternoon: false, evening: false }
+  });
   const [subjects, setSubjects] = useState(subjectsOffered);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await getTutorProfile();
+        if (response.success) {
+          setTutorProfileData(response.data);
+          
+          // Update preview images with current URLs
+          if (response.data.profileImageUrl) {
+            setPreviewImage(response.data.profileImageUrl);
+          }
+          if (response.data.cv) {
+            setCVPreview(response.data.cv);
+          }
+          
+          // Update form data when tutor profile is fetched
+          const {
+            fullName = "",
+            institution = "",
+            qualification = "",
+            aboutMe = "",
+            aboutMySession = "",
+            priceRate = 0,
+            contactEmail = "",
+            contactNumber = "",
+            profileImageUrl = "",
+            availability = {
+              monday: { morning: false, afternoon: false, evening: false },
+              tuesday: { morning: false, afternoon: false, evening: false },
+              wednesday: { morning: false, afternoon: false, evening: false },
+              thursday: { morning: false, afternoon: false, evening: false },
+              friday: { morning: false, afternoon: false, evening: false },
+              saturday: { morning: false, afternoon: false, evening: false },
+              sunday: { morning: false, afternoon: false, evening: false }
+            },
+            subjectsOffered = [{ subject: "", topic: "" }]
+          } = response.data;
+          
+          // Update all state variables with fetched data
+          setFormData({
+            fullName,
+            institution,
+            qualification,
+            aboutMe,
+            aboutMySession,
+            priceRate,
+            contactEmail,
+            contactNumber,
+          });
+          
+          setAvail(availability);
+          setSubjects(subjectsOffered);
+        } else {
+          console.error("Failed to fetch tutor profile:", response.error);
+          setTutorProfileData(tutorProfileDataMock); // Use mock data if fetching fails
+        }
+      } catch (error) {
+        console.error("Error fetching tutor profile:", error);
+        setTutorProfileData(tutorProfileDataMock);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  if (!tutorProfileData) {
+    return <div>Loading...</div>;
+  }
 
   // Options for react-select (subjects dropdown)
   const availableSubjects = [
@@ -107,27 +196,73 @@ function EditProfile() {
   };
 
   // Handle form submission (front-end only)
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Log profile image and CV file if uploaded
-    if (selectedImage) {
-      console.log("Selected profile image file:", selectedImage);
-    }
-    if (cvFile) {
-      console.log("Selected CV file:", cvFile);
-    }
 
     const updatedData = {
       ...formData,
-      profileImageUrl: previewImage, // Replace with uploaded URL if needed
-      cvFile, // File object for CV upload
       availability: avail,
-      subjectsOffered: subjects,
+      subjectsOffered: subjects.map(subject => ({
+        subject: subject.subject || '',
+        topic: subject.topic || ''
+      })),
+      selectedImage: selectedImage,
+      cvFile: cvFile
     };
 
-    console.log("Updated Profile Data:", updatedData);
-    alert("Profile updated (mock)!");
+    try {
+      const response = await updateTutorProfile(updatedData);
+      if (response.success) {
+        alert("Profile updated successfully!");
+        navigate("/tutor/profile");
+      } else {
+        alert(`Failed to update profile: ${response.error}`);
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("An error occurred while updating your profile");
+    }
+  };
+
+  // Update the availability table render function
+  const renderAvailabilityTable = () => {
+    // Define only the days we want to show
+    const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+    const timeSlots = ['morning', 'afternoon', 'evening'];
+
+    return (
+      <table className="table-auto w-full border border-gray-300">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="p-2 border-r border-gray-300"></th>
+            {timeSlots.map((slot) => (
+              <th key={slot} className="p-2 border-r border-gray-300 capitalize">
+                {slot}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {days.map((day) => (
+            <tr key={day} className="text-center">
+              <td className="p-2 border border-gray-300 capitalize">
+                {day}
+              </td>
+              {timeSlots.map((slot) => (
+                <td key={slot} className="p-2 border border-gray-300">
+                  <input
+                    type="checkbox"
+                    checked={avail[day]?.[slot] || false}
+                    onChange={() => handleAvailabilityChange(day, slot)}
+                    className="w-5 h-5 text-teal-500"
+                  />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
   };
 
   return (
@@ -333,40 +468,7 @@ function EditProfile() {
             {/* Availability Table */}
             <div className="mt-6">
               <h2 className="text-2xl font-semibold mb-2">Availability</h2>
-              <table className="table-auto w-full border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="p-2 border-r border-gray-300"></th>
-                    {["morning", "afternoon", "evening"].map((slot) => (
-                      <th
-                        key={slot}
-                        className="p-2 border-r border-gray-300 capitalize"
-                      >
-                        {slot}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.keys(avail).map((day) => (
-                    <tr key={day} className="text-center">
-                      <td className="p-2 border border-gray-300 capitalize">
-                        {day}
-                      </td>
-                      {["morning", "afternoon", "evening"].map((slot) => (
-                        <td key={slot} className="p-2 border border-gray-300">
-                          <input
-                            type="checkbox"
-                            checked={avail[day][slot]}
-                            onChange={() => handleAvailabilityChange(day, slot)}
-                            className="w-5 h-5 text-teal-500"
-                          />
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              {renderAvailabilityTable()}
             </div>
 
             {/* Subjects Offered */}

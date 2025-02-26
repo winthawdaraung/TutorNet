@@ -1,10 +1,37 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
-import tutorProfileData from "../../mockData/TutorProfileData";
+import tutorProfileDataMock from "../../mockData/TutorProfileData";
 import defaultProfile from "../../assets/tutor/defaultProfile.png";
+import { getTutorProfile } from "../../handle/tutor"
+import { useEffect, useState } from "react";
 
 function TutorProfile() {
   const navigate = useNavigate();
+  const [tutorProfileData, setTutorProfileData] = useState(tutorProfileDataMock);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await getTutorProfile();
+        if (response.success) {
+          console.log('Profile data:', response.data); // Debug log
+          setTutorProfileData(response.data);
+        } else {
+          console.error("Failed to fetch tutor profile:", response.error);
+          setTutorProfileData(tutorProfileDataMock);
+        }
+      } catch (error) {
+        console.error("Error fetching tutor profile:", error);
+        setTutorProfileData(tutorProfileDataMock);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  if (!tutorProfileData) {
+    return <div>Loading...</div>;
+  }
+  
 
   const {
     fullName,
@@ -84,11 +111,15 @@ function TutorProfile() {
     );
   };
 
-  // If profileImageUrl is empty, use the default profile image
-  const displayProfileImage =
-    profileImageUrl && profileImageUrl.trim()
-      ? profileImageUrl
-      : defaultProfile;
+  // Update the displayProfileImage logic to handle server URLs
+  const displayProfileImage = profileImageUrl
+    ? `${profileImageUrl}` // Use the full URL from the server
+    : defaultProfile;
+  console.log(`../../../..${profileImageUrl}`);
+  // Add CV display logic
+  const displayCV = cv 
+    ? `${cv}` // Use the full URL from the server
+    : null;
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -101,6 +132,11 @@ function TutorProfile() {
                 src={displayProfileImage}
                 alt="Tutor profile"
                 className="w-32 h-32 object-cover rounded-full border border-gray-300"
+                onError={(e) => {
+                  console.log('Image load error:', e); // Debug log
+                  e.target.onerror = null;
+                  e.target.src = defaultProfile;
+                }}
               />
             </div>
             <div>
@@ -134,17 +170,24 @@ function TutorProfile() {
             <p className="text-gray-700">{aboutMySession}</p>
           </div>
 
-          {/* CV Section */}
+          {/* CV Section - Updated */}
           <div className="mb-4">
             <h2 className="text-xl font-semibold mb-1">CV</h2>
-            {cv ? (
-              <img
-                src={cv}
-                alt="Tutor CV"
-                className="max-w-full h-auto border border-gray-300"
-              />
+            {displayCV ? (
+              <div className="relative">
+                <img
+                  src={displayCV}
+                  alt="Tutor CV"
+                  className="max-w-full h-auto border border-gray-300"
+                  onError={(e) => {
+                    console.log('CV load error:', e); // Debug log
+                    e.target.style.display = 'none';
+                    console.error('Failed to load CV image');
+                  }}
+                />
+              </div>
             ) : (
-              <p>No CV uploaded</p>
+              <p className="text-gray-500 italic">No CV uploaded</p>
             )}
           </div>
 
