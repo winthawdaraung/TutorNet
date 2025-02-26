@@ -11,7 +11,10 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
+<<<<<<< HEAD
     setError("");
+=======
+>>>>>>> 6530c1a9d3bf21bcc0aad46da460da934dceba97
     try {
       const { success, data } = await handleLogin(email, password);
       if (!success) {

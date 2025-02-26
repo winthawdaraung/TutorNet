@@ -23,19 +23,14 @@ const RegisterTutorPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!acceptTerms) {
       setShowAlert(true);
       return;
     }
-    const response = await registerTutor(formData);
-    if (response.success) {   
-        alert("Tutor Registered Successfully");
-        navigate("/login");
-    } else {
-        alert(response.error);
-    }
+    alert(`Tutor Registered: ${JSON.stringify(formData)}`);
+    navigate("/login");
   };
 
   return (

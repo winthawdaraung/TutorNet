@@ -19,49 +19,16 @@ export const registerTutor = (async (req, res) => {
     }
 });
 
-export const getTutors = (async (req, res) => {
-    try {
-        const tutors = await Tutor.find();
-        res.status(200).json({ success: true, tutors });
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Internal server error" });
-    }
-});
-
-export const getTutorById = (async (req, res) => {
-    try {
-        const tutor = await Tutor.findById(req.params.id);
-        if (!tutor) {
-            return res.status(404).json({ success: false, message: "Tutor not found" });
-        }
-        res.status(200).json({ success: true, tutor });
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Internal server error" });
-    }
-});
-
 export const updateTutor = (async (req, res) => {
+    const { tutorId } = req.params;
+    const { fullName, email, password, experience, subjects, profilePicture } = req.body;
     try {
-        const tutor = await Tutor.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!tutor) {
-            return res.status(404).json({ success: false, message: "Tutor not found" });
-        }
-        res.status(200).json({ success: true, tutor });
+        const tutor = await Tutor.findByIdAndUpdate(tutorId, { fullName, email, password, experience, subjects, profilePicture }, { new: true });
+        res.status(200).json({ success: true, message: "Tutor updated successfully", tutor });
     } catch (error) {
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 });
 
-export const deleteTutor = (async (req, res) => {
-    try {
-        const tutor = await Tutor.findByIdAndDelete(req.params.id);
-        if (!tutor) {
-            return res.status(404).json({ success: false, message: "Tutor not found" });
-        }
-        res.status(200).json({ success: true, message: "Tutor deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Internal server error" });
-    }
-});
 
 

@@ -35,3 +35,19 @@ export const logout = (async (req, res) => {
     res.status(200).json({ success: true, message: "Logged out successfully" });
 });
 
+export const forgetPassword = (async (req, res) => {
+    const { email } = req.body;
+    try {
+        const student = await Student.findOne({ email });
+        const tutor = await Tutor.findOne({ email });
+        if (!student && !tutor) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        // Send email with reset link
+        // sendeEmail(email, "Reset Password", "Click the link to reset password");
+        res.status(200).json({ success: true, message: "Password reset link sent to email" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
+);
