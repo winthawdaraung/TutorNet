@@ -132,5 +132,6 @@ const StudentSearchPage = () => {
     </motion.div>
   );
 };
+};
 
 export default StudentSearchPage;
