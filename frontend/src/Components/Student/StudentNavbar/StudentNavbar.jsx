@@ -21,7 +21,8 @@ const StudentNavbar = () => {
             <Link
               to="/student-search"
               className={`transition-all duration-300 ${
-                location.pathname.startsWith("/student-search") || location.pathname.startsWith("/student-search-results")
+                location.pathname.startsWith("/student-search") ||
+                location.pathname.startsWith("/student-search-results")
                   ? "text-blue-600 font-bold"
                   : "hover:text-[#00BFA5]"
               }`}
@@ -38,7 +39,9 @@ const StudentNavbar = () => {
             <Link
               to="/profile"
               className={`transition-all duration-300 ${
-                location.pathname === "/student-profile" ? "text-blue-600 font-bold" : "hover:text-[#00BFA5]"
+                location.pathname === "/student-profile"
+                  ? "text-blue-600 font-bold"
+                  : "hover:text-[#00BFA5]"
               }`}
             >
               My Profile

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import HowItWorks from "./pages/HowItWorks";
 import AboutUs from "./pages/AboutUs";
@@ -10,17 +10,20 @@ import RegisterStudentPage from "./pages/RegisterRole/RegisterStudentPage";
 import RegisterTutorPage from "./pages/RegisterRole/RegisterTutorPage";
 import ResetPassword from "./pages/ResetPassword";
 
-// 📌 เพิ่มหน้าใหม่
+// 📌 Student Pages
 import StudentSearchPage from "./pages/Student/StudentSearchPage";
 import StudentSearchResultPage from "./pages/Student/StudentSearchResultPage";
 
-
+// 📌 Tutor Pages
+import TutormyProfilePage from "./pages/Tutor/Tutormyprofilepage";
+import TutorEditProfile from "./pages/Tutor/Tutoreditmyprofilepage";
+import TutorNotificationPage from "./pages/Tutor/Tutornotificationpage";
 
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
-        {/* หน้า Public */}
+        {/* Public Pages */}
         <Route path="/" element={<Home />} />
         <Route path="/howitworks" element={<HowItWorks />} />
         <Route path="/about" element={<AboutUs />} />
@@ -33,11 +36,22 @@ function App() {
         <Route path="/register-tutor" element={<RegisterTutorPage />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
-        {/* 📌 หน้า Student */}
+        {/* Student Pages */}
         <Route path="/student-search" element={<StudentSearchPage />} />
-        <Route path="/student-search-results" element={<StudentSearchResultPage />} />
+        <Route
+          path="/student-search-results"
+          element={<StudentSearchResultPage />}
+        />
+
+        {/* 📌 Tutor Pages (Navbar will be handled inside the pages themselves) */}
+        <Route path="/tutor/profile" element={<TutormyProfilePage />} />
+        <Route path="/tutor/edit-profile" element={<TutorEditProfile />} />
+        <Route
+          path="/tutor/notifications"
+          element={<TutorNotificationPage />}
+        />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 
