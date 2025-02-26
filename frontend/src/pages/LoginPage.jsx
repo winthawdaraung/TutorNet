@@ -10,14 +10,25 @@ const LoginPage = () => {
   const [error, setError] = useState(""); // To handle login errors
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    const response = await handleLogin(email, password);
-    if (response.success) {
-      navigate("/dashboard");
-    } else {
-      alert(response.error);
+  const handleSubmit = async () => {
+    setError("");
+    try {
+      const { success, data } = await handleLogin(email, password);
+      if (!success) {
+        setError(data);
+      } else {
+        const response = data;
+          if (response.role === "student") {
+            navigate("/studentafterlogin");
+          } else if (response.role === "tutor") {
+            navigate("/tutorafterlogin");
+          } else {
+            setError("Invalid role.");
+          }
+      }
+    } catch (error) { 
+      console.error("Error logging in", error);
+      setError("An error occurred during login. Please try again.");
     }
   };
 
@@ -72,7 +83,6 @@ const LoginPage = () => {
 
           {/* Sign In Button */}
           <motion.button
-            type="submit"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="w-full py-3 bg-[#00BFA5] text-white font-semibold rounded-full hover:bg-teal-600 transition duration-300 shadow-md"
