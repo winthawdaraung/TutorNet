@@ -40,14 +40,20 @@ export const getTutorProfile = async () => {
             credentials: 'include'
         });
 
-        const data = await response.json();
+        // Log the raw response for debugging
+        console.log('Raw response:', response);
 
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error response:', errorText);
             return { 
                 success: false, 
-                error: data.message || 'Failed to fetch profile' 
+                error: 'Failed to fetch profile' 
             };
         }
+
+        const data = await response.json();
+        console.log('Profile data:', data); // Debug log
 
         return { 
             success: true, 
@@ -89,6 +95,11 @@ export const updateTutorProfile = async (formData) => {
         if (formData.cvFile) {
             formDataObj.append('cvFile', formData.cvFile);
         }
+
+        // Log the FormData for debugging
+        for (let pair of formDataObj.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
         
         const response = await fetch('/api/tutors/profile', {
             method: 'PUT',
@@ -100,12 +111,10 @@ export const updateTutorProfile = async (formData) => {
         });
         
         const data = await response.json();
+        console.log('Update response:', data); // Debug log
 
         if (!response.ok) {
-            return { 
-                success: false, 
-                error: data.message || 'Failed to update profile' 
-            };
+            throw new Error(data.message || 'Failed to update profile');
         }
         
         return { 
@@ -117,7 +126,7 @@ export const updateTutorProfile = async (formData) => {
         console.error('Error updating tutor profile:', error);
         return { 
             success: false, 
-            error: 'Failed to update profile' 
+            error: error.message || 'Failed to update profile' 
         };
     }
 };

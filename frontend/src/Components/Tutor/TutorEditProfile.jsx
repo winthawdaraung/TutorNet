@@ -20,6 +20,7 @@ function EditProfile() {
     contactEmail = "",
     contactNumber = "",
     profileImageUrl = "",
+    cv = "",
     availability = {
       monday: { morning: false, afternoon: false, evening: false },
       tuesday: { morning: false, afternoon: false, evening: false },
@@ -45,9 +46,7 @@ function EditProfile() {
 
   // State for handling profile image uploads and preview
   const [selectedImage, setSelectedImage] = useState(null);
-  const [previewImage, setPreviewImage] = useState(
-    profileImageUrl && profileImageUrl.trim() ? profileImageUrl : defaultProfile
-  );
+  const [previewImage, setPreviewImage] = useState();
 
   // State for handling CV uploads and preview (accepts JPG only)
   const [cvFile, setCVFile] = useState(null);
@@ -74,10 +73,12 @@ function EditProfile() {
           
           // Update preview images with current URLs
           if (response.data.profileImageUrl) {
-            setPreviewImage(response.data.profileImageUrl);
+            setPreviewImage(`http://localhost:5000${response.data.profileImageUrl}`);
+          } else {
+            setPreviewImage(defaultProfile);
           }
           if (response.data.cv) {
-            setCVPreview(response.data.cv);
+            setCVPreview(`http://localhost:5000${response.data.cv}`);
           }
           
           // Update form data when tutor profile is fetched
@@ -164,6 +165,8 @@ function EditProfile() {
       const file = e.target.files[0];
       setCVFile(file);
       setCVPreview(URL.createObjectURL(file));
+      console.log("CV file selected:", file);
+      console.log("CV preview URL:", URL.createObjectURL(file));
     }
   };
 
