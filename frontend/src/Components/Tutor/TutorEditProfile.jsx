@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import Select from "react-select";
+import { useNavigate } from "react-router-dom";
 import tutorProfileData from "../../mockData/TutorProfileData";
 import defaultProfile from "../../assets/tutor/defaultProfile.png";
 
 function EditProfile() {
+  // Initialize navigate function for routing
+  const navigate = useNavigate();
+
   // Destructure data from your mock data
   const {
     fullName,
@@ -127,20 +131,40 @@ function EditProfile() {
     };
 
     console.log("Updated Profile Data:", updatedData);
-    alert("Profile updated (mock)!");
+
+    // Here you would typically make an API call to save the data
+    // For example:
+    // try {
+    //   await saveProfileData(updatedData);
+    //   navigate('/tutor/profile');
+    // } catch (error) {
+    //   console.error('Failed to save profile:', error);
+    //   alert('Failed to save profile. Please try again.');
+    // }
+
+    // For now, we'll just simulate a successful save with a setTimeout
+    alert("Profile updated successfully!");
+
+    // Redirect to profile page after a brief delay (simulating API call)
+    setTimeout(() => {
+      navigate("/tutor/profile");
+    }, 500);
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-2 sm:p-4">
       <div className="card bg-base-100 shadow-xl w-full max-w-3xl">
-        <div className="card-body">
-          <h1 className="text-3xl font-bold mb-4">Edit Profile</h1>
+        <div className="card-body p-3 sm:p-6">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-4">Edit Profile</h1>
           <form onSubmit={handleSubmit}>
             {/* Personal Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {/* Full Name */}
               <div>
-                <label htmlFor="fullName" className="block mb-1 font-semibold">
+                <label
+                  htmlFor="fullName"
+                  className="block mb-1 font-semibold text-sm sm:text-base"
+                >
                   Full Name
                 </label>
                 <input
@@ -149,7 +173,7 @@ function EditProfile() {
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-2 border border-gray-300 rounded text-sm sm:text-base"
                   placeholder="Type your full name..."
                 />
               </div>
@@ -158,7 +182,7 @@ function EditProfile() {
               <div>
                 <label
                   htmlFor="institution"
-                  className="block mb-1 font-semibold"
+                  className="block mb-1 font-semibold text-sm sm:text-base"
                 >
                   Institution
                 </label>
@@ -168,7 +192,7 @@ function EditProfile() {
                   name="institution"
                   value={formData.institution}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-2 border border-gray-300 rounded text-sm sm:text-base"
                   placeholder="e.g. University Name"
                 />
               </div>
@@ -177,7 +201,7 @@ function EditProfile() {
               <div>
                 <label
                   htmlFor="qualification"
-                  className="block mb-1 font-semibold"
+                  className="block mb-1 font-semibold text-sm sm:text-base"
                 >
                   Qualification
                 </label>
@@ -187,14 +211,17 @@ function EditProfile() {
                   name="qualification"
                   value={formData.qualification}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-2 border border-gray-300 rounded text-sm sm:text-base"
                   placeholder="e.g. Bachelor's, Master's"
                 />
               </div>
 
               {/* Price Rate */}
               <div>
-                <label htmlFor="priceRate" className="block mb-1 font-semibold">
+                <label
+                  htmlFor="priceRate"
+                  className="block mb-1 font-semibold text-sm sm:text-base"
+                >
                   Price Rate (per hour)
                 </label>
                 <input
@@ -203,7 +230,7 @@ function EditProfile() {
                   name="priceRate"
                   value={formData.priceRate}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-2 border border-gray-300 rounded text-sm sm:text-base"
                   placeholder="e.g. 50"
                 />
               </div>
@@ -212,7 +239,7 @@ function EditProfile() {
               <div>
                 <label
                   htmlFor="contactEmail"
-                  className="block mb-1 font-semibold"
+                  className="block mb-1 font-semibold text-sm sm:text-base"
                 >
                   Contact Email
                 </label>
@@ -222,7 +249,7 @@ function EditProfile() {
                   name="contactEmail"
                   value={formData.contactEmail}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-2 border border-gray-300 rounded text-sm sm:text-base"
                   placeholder="you@example.com"
                 />
               </div>
@@ -231,7 +258,7 @@ function EditProfile() {
               <div>
                 <label
                   htmlFor="contactNumber"
-                  className="block mb-1 font-semibold"
+                  className="block mb-1 font-semibold text-sm sm:text-base"
                 >
                   Contact Number
                 </label>
@@ -241,7 +268,7 @@ function EditProfile() {
                   name="contactNumber"
                   value={formData.contactNumber}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-2 border border-gray-300 rounded text-sm sm:text-base"
                   placeholder="e.g. +1 555 1234"
                 />
               </div>
@@ -249,7 +276,10 @@ function EditProfile() {
 
             {/* About Me */}
             <div className="mt-4">
-              <label htmlFor="aboutMe" className="block mb-1 font-semibold">
+              <label
+                htmlFor="aboutMe"
+                className="block mb-1 font-semibold text-sm sm:text-base"
+              >
                 About Me
               </label>
               <textarea
@@ -257,7 +287,7 @@ function EditProfile() {
                 name="aboutMe"
                 value={formData.aboutMe}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-2 border border-gray-300 rounded text-sm sm:text-base"
                 rows="3"
                 placeholder="Brief introduction about yourself..."
               ></textarea>
@@ -267,7 +297,7 @@ function EditProfile() {
             <div className="mt-4">
               <label
                 htmlFor="aboutMySession"
-                className="block mb-1 font-semibold"
+                className="block mb-1 font-semibold text-sm sm:text-base"
               >
                 About My Session
               </label>
@@ -276,102 +306,127 @@ function EditProfile() {
                 name="aboutMySession"
                 value={formData.aboutMySession}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-2 border border-gray-300 rounded text-sm sm:text-base"
                 rows="3"
                 placeholder="What do you teach in your session?..."
               ></textarea>
             </div>
 
-            {/* Profile Image Upload */}
-            <div className="mt-4">
-              <label
-                htmlFor="profileImage"
-                className="block mb-1 font-semibold"
-              >
-                Profile Image
-              </label>
-              {previewImage && (
-                <img
-                  src={previewImage}
-                  alt="Profile Preview"
-                  className="w-32 h-32 object-cover rounded-full border border-gray-300 mb-2"
-                />
-              )}
-              <input
-                type="file"
-                id="profileImage"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="w-full"
-              />
-            </div>
+            {/* Profile Image and CV Upload in a row on larger screens */}
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Profile Image Upload */}
+              <div>
+                <label
+                  htmlFor="profileImage"
+                  className="block mb-1 font-semibold text-sm sm:text-base"
+                >
+                  Profile Image
+                </label>
+                <div className="flex items-center space-x-2">
+                  {previewImage && (
+                    <img
+                      src={previewImage}
+                      alt="Profile Preview"
+                      className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-full border border-gray-300"
+                    />
+                  )}
+                  <div className="flex-1">
+                    <input
+                      type="file"
+                      id="profileImage"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="w-full text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
 
-            {/* CV Upload */}
-            <div className="mt-4">
-              <label htmlFor="cvUpload" className="block mb-1 font-semibold">
-                CV (JPG only)
-              </label>
-              {cvPreview && (
-                <img
-                  src={cvPreview}
-                  alt="CV Preview"
-                  className="w-32 h-32 object-cover rounded border border-gray-300 mb-2"
-                />
-              )}
-              <input
-                type="file"
-                id="cvUpload"
-                accept="image/jpeg"
-                onChange={handleCVChange}
-                className="w-full"
-              />
-              <p className="text-sm text-gray-500 mt-1">
-                Please upload your CV as a .jpg file.
-              </p>
+              {/* CV Upload */}
+              <div>
+                <label
+                  htmlFor="cvUpload"
+                  className="block mb-1 font-semibold text-sm sm:text-base"
+                >
+                  CV (JPG only)
+                </label>
+                <div className="flex items-center space-x-2">
+                  {cvPreview && (
+                    <img
+                      src={cvPreview}
+                      alt="CV Preview"
+                      className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded border border-gray-300"
+                    />
+                  )}
+                  <div className="flex-1">
+                    <input
+                      type="file"
+                      id="cvUpload"
+                      accept="image/jpeg"
+                      onChange={handleCVChange}
+                      className="w-full text-sm"
+                    />
+                    <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                      Please upload your CV as a .jpg file.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Availability Table */}
             <div className="mt-6">
-              <h2 className="text-2xl font-semibold mb-2">Availability</h2>
-              <table className="table-auto w-full border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="p-2 border-r border-gray-300"></th>
-                    {["morning", "afternoon", "evening"].map((slot) => (
-                      <th
-                        key={slot}
-                        className="p-2 border-r border-gray-300 capitalize"
-                      >
-                        {slot}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.keys(avail).map((day) => (
-                    <tr key={day} className="text-center">
-                      <td className="p-2 border border-gray-300 capitalize">
-                        {day}
-                      </td>
-                      {["morning", "afternoon", "evening"].map((slot) => (
-                        <td key={slot} className="p-2 border border-gray-300">
-                          <input
-                            type="checkbox"
-                            checked={avail[day][slot]}
-                            onChange={() => handleAvailabilityChange(day, slot)}
-                            className="w-5 h-5 text-teal-500"
-                          />
-                        </td>
+              <h2 className="text-xl sm:text-2xl font-semibold mb-2">
+                Availability
+              </h2>
+              <div className="overflow-x-auto">
+                <table className="table-auto w-full border border-gray-300 text-sm">
+                  <thead>
+                    <tr className="bg-gray-100">
+                      <th className="p-1 sm:p-2 border-r border-gray-300"></th>
+                      {["9-12 AM", "1-5 PM", "After 5 PM"].map((slot) => (
+                        <th
+                          key={slot}
+                          className="p-1 sm:p-2 border-r border-gray-300 capitalize"
+                        >
+                          {slot}
+                        </th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {Object.keys(avail).map((day) => (
+                      <tr key={day} className="text-center">
+                        <td className="p-1 sm:p-2 border border-gray-300 capitalize">
+                          {day}
+                        </td>
+                        {["9-12 AM", "1-5 PM", "After 5 PM"].map((slot) => (
+                          <td
+                            key={slot}
+                            className="p-1 sm:p-2 border border-gray-300"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={avail[day][slot]}
+                              onChange={() =>
+                                handleAvailabilityChange(day, slot)
+                              }
+                              className="w-4 h-4 sm:w-5 sm:h-5 text-teal-500"
+                            />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             {/* Subjects Offered */}
             <div className="mt-6">
-              <h2 className="text-2xl font-semibold mb-2">Subjects Offered</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold mb-2">
+                Subjects Offered
+              </h2>
               {subjects.map((subjectItem, index) => {
                 // Convert the subject string into a matching option for react-select
                 const selectedOption = availableSubjects.find(
@@ -379,10 +434,13 @@ function EditProfile() {
                 );
 
                 return (
-                  <div key={index} className="flex items-center space-x-2 mb-4">
-                    <div className="w-60">
+                  <div
+                    key={index}
+                    className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 space-y-2 sm:space-y-0 mb-4"
+                  >
+                    <div className="w-full sm:w-60">
                       <Select
-                        className="basic-single"
+                        className="basic-single text-sm"
                         classNamePrefix="select"
                         options={availableSubjects}
                         value={selectedOption || null}
@@ -401,13 +459,13 @@ function EditProfile() {
                         handleSubjectChange(index, "topic", e.target.value)
                       }
                       placeholder="Type the topic..."
-                      className="p-2 border border-gray-300 rounded"
+                      className="p-2 border border-gray-300 rounded w-full sm:w-auto text-sm"
                     />
 
                     <button
                       type="button"
                       onClick={() => removeSubject(index)}
-                      className="text-red-500"
+                      className="text-red-500 text-sm"
                     >
                       Remove
                     </button>
@@ -418,17 +476,17 @@ function EditProfile() {
               <button
                 type="button"
                 onClick={addSubject}
-                className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition"
+                className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition text-sm"
               >
                 Add Subject
               </button>
             </div>
 
             {/* Submit Button */}
-            <div className="mt-8">
+            <div className="mt-6 sm:mt-8">
               <button
                 type="submit"
-                className="bg-teal-500 text-white px-6 py-2 rounded hover:bg-teal-600 transition"
+                className="bg-teal-500 text-white px-4 sm:px-6 py-2 rounded hover:bg-teal-600 transition text-sm sm:text-base"
               >
                 Save Changes
               </button>

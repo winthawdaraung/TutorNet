@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { SiStudyverse } from "react-icons/si";
 import { IoNotificationsOutline } from "react-icons/io5";
-import { FiMenu, FiX } from "react-icons/fi"; 
+import { FiMenu, FiX } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 
 const StudentNavbar = () => {
@@ -13,13 +13,14 @@ const StudentNavbar = () => {
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md py-3 md:py-4 backdrop-blur-md">
       <div className="container mx-auto flex justify-between items-center px-3 md:px-6 lg:px-12">
-        
         {/* ✅ Logo - Shifted Left & Modern Separator for "Student" */}
         <div className="text-2xl flex items-center gap-1 font-extrabold">
           <SiStudyverse className="text-3xl text-teal-500" />
           <p>
             EDUbridge
-            <span className="text-gray-400 font-normal text-lg tracking-wide ml-2">| Student</span>
+            <span className="text-gray-400 font-normal text-lg tracking-wide ml-2">
+              | Student
+            </span>
           </p>
         </div>
 
@@ -29,7 +30,8 @@ const StudentNavbar = () => {
             <Link
               to="/student-search"
               className={`transition-all duration-300 ${
-                location.pathname.startsWith("/student-search") || location.pathname.startsWith("/student-search-results")
+                location.pathname.startsWith("/student-search") ||
+                location.pathname.startsWith("/student-search-results")
                   ? "text-[#00BFA5] font-sm"
                   : "hover:text-[#00BFA5]"
               }`}
@@ -40,7 +42,14 @@ const StudentNavbar = () => {
 
           {/* 🔹 My Profile (Now Clickable, But No Path Yet) */}
           <li>
-            <Link className="transition-all duration-300 hover:text-[#00BFA5]">
+            <Link
+              to="/student-profile"
+              className={`transition-all duration-300 ${
+                location.pathname === "/student-profile"
+                  ? "text-[#00BFA5] font-sm"
+                  : "hover:text-[#00BFA5]"
+              }`}
+            >
               My Profile
             </Link>
           </li>
@@ -57,7 +66,9 @@ const StudentNavbar = () => {
             >
               <IoNotificationsOutline
                 className="text-2xl"
-                strokeWidth={location.pathname === "/student-notifications" ? "2.5" : "2"}
+                strokeWidth={
+                  location.pathname === "/student-notifications" ? "2.5" : "2"
+                }
               />
             </Link>
           </li>
@@ -96,7 +107,8 @@ const StudentNavbar = () => {
                   to="/student-search"
                   onClick={() => setIsOpen(false)}
                   className={`transition-all duration-300 ${
-                    location.pathname.startsWith("/student-search") || location.pathname.startsWith("/student-search-results")
+                    location.pathname.startsWith("/student-search") ||
+                    location.pathname.startsWith("/student-search-results")
                       ? "text-[#00BFA5] font-sm"
                       : "hover:text-[#00BFA5]"
                   }`}
@@ -108,8 +120,12 @@ const StudentNavbar = () => {
               {/* 🔹 My Profile (Now Clickable, But No Path Yet) */}
               <li>
                 <Link
-                  onClick={() => setIsOpen(false)}
-                  className="transition-all duration-300 hover:text-[#00BFA5]"
+                  to="/student-profile"
+                  className={`transition-all duration-300 ${
+                    location.pathname === "/student-profile"
+                      ? "text-[#00BFA5] font-bold"
+                      : "hover:text-[#00BFA5]"
+                  }`}
                 >
                   My Profile
                 </Link>
@@ -126,7 +142,11 @@ const StudentNavbar = () => {
                       : "hover:text-[#00BFA5]"
                   }`}
                 >
-                  {isOpen ? "Notification" : <IoNotificationsOutline className="text-2xl" />}
+                  {isOpen ? (
+                    "Notification"
+                  ) : (
+                    <IoNotificationsOutline className="text-2xl" />
+                  )}
                 </Link>
               </li>
 

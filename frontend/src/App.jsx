@@ -18,7 +18,7 @@ import StudentNotificationsPage from "./pages/Student/StudentNotificationsPage";
 import StudentViewTutorPage from "./pages/Student/StudentViewTutorPage";
 import StudentRequestPage from "./pages/Student/StudentRequestPage";
 import StudentProfile from "./pages/Student/StudentProfile";
-
+import EditStudentProfile from "./pages/Student/EditStudentProfile";
 //Tutor Pages
 import TutormyProfilePage from "./pages/Tutor/Tutormyprofilepage";
 import TutorEditProfile from "./pages/Tutor/Tutoreditmyprofilepage";
@@ -44,16 +44,28 @@ function App() {
 
         {/* Student Pages */}
         <Route path="/student-search" element={<StudentSearchPage />} />
-        <Route path="/student-search-results" element={<StudentSearchResultPage />} />
-        <Route path="/student-notifications" element={<StudentNotificationsPage />} />
+        <Route
+          path="/student-search-results"
+          element={<StudentSearchResultPage />}
+        />
+        <Route
+          path="/student-notifications"
+          element={<StudentNotificationsPage />}
+        />
         <Route path="/student-request" element={<StudentRequestPage />} />
-        <Route path="/student-view-tutor-profile" element={<StudentViewTutorPage />} />
+        <Route
+          path="/student-view-tutor-profile"
+          element={<StudentViewTutorPage />}
+        />
         <Route path="/student-profile" element={<StudentProfile />} />
-
+        <Route path="/student-edit-profile" element={<EditStudentProfile />} />
         {/* 📌 Tutor Pages (Navbar will be handled inside the pages themselves) */}
         <Route path="/tutor/profile" element={<TutormyProfilePage />} />
         <Route path="/tutor/edit-profile" element={<TutorEditProfile />} />
-        <Route path="/tutor/notifications" element={<TutorNotificationPage />} />
+        <Route
+          path="/tutor/notifications"
+          element={<TutorNotificationPage />}
+        />
       </Routes>
     </Router>
   );
