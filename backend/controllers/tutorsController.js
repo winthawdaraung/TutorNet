@@ -22,6 +22,10 @@ export const registerTutor = async (req, res) => {
                 message: "User with this email already exists!" 
             });
         }
+        const subjectsOffered_objects = subjectsOffered.map(subject => ({
+            subject: subject.subject || '',
+            topic: subject.topic || ''
+        }));
 
         const hashedPassword = await hashPassword(password);
         const tutor = await Tutor.create({ 
@@ -29,7 +33,7 @@ export const registerTutor = async (req, res) => {
             email, 
             password: hashedPassword, 
             institution, 
-            subjectsOffered, 
+            subjectsOffered_objects, 
             experience: Number(experience) 
         });
 
@@ -63,6 +67,11 @@ export const getTutorProfile = async (req, res) => {
                 message: "Tutor not found"
             });
         }
+
+        // Return the tutor profile
+        // tutor.profileImageUrl = `${ENV.API_URL}${tutor.profileImageUrl}`;
+        // tutor.cv = `${ENV.API_URL}${tutor.cv}`;
+        console.log("Tutor profile:", tutor);
 
         res.status(200).json({
             success: true,
@@ -98,7 +107,7 @@ export const updateTutorProfile = async (req, res) => {
                 // Delete old profile image if it exists
                 if (currentTutor.profileImageUrl) {
                     try {
-                        const oldImagePath = path.join(__dirname, '..', currentTutor.profileImageUrl);
+                        const oldImagePath = path.join(__dirname, '../..', currentTutor.profileImageUrl);
                         console.log('Deleting old profile image:', oldImagePath);
                         if (fs.existsSync(oldImagePath)) {
                             fs.unlinkSync(oldImagePath);
@@ -116,7 +125,7 @@ export const updateTutorProfile = async (req, res) => {
                 // Delete old CV if it exists
                 if (currentTutor.cv) {
                     try {
-                        const oldCVPath = path.join(__dirname, '..', currentTutor.cv);
+                        const oldCVPath = path.join(__dirname, '../..', currentTutor.cv);
                         console.log('Deleting old CV:', oldCVPath);
                         if (fs.existsSync(oldCVPath)) {
                             fs.unlinkSync(oldCVPath);
@@ -196,6 +205,5 @@ export const updateTutorProfile = async (req, res) => {
         });
     }
 };
-
 
 
