@@ -44,12 +44,12 @@ const RegisterTutorPage = () => {
         navigate("/login");
       } else {
         setError(response.error);
-        alert(response.error);
+        // alert(response.error);
       }
     } catch (error) {
       console.error("Error registering tutor", error);
       setError(error.message);
-      alert("Error registering tutor", error)
+      // alert("Error registering tutor", error)
     }
   };
 
@@ -69,7 +69,7 @@ const RegisterTutorPage = () => {
             Join our platform and start teaching today!
           </p>
         </motion.div>
-
+        {error && <p className="text-red-500 mt-3">{error}</p>}
         <form className="space-y-5 mt-6" onSubmit={handleSubmit}>
           {/* Full Name */}
           <div className="relative">
