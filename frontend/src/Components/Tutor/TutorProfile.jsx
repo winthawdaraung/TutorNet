@@ -30,6 +30,9 @@ function TutorProfile() {
   if (!tutorProfileData) {
     return <div>Loading...</div>;
   }
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const {
     fullName,
@@ -67,8 +70,8 @@ function TutorProfile() {
   const renderAvailabilityTable = () => {
     const days = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
     const timeSlots = [
-      { key: "morning", label: "9-12 PM" },
-      { key: "afternoon", label: "12-5 PM" },
+      { key: "morning", label: "9-12 AM" },
+      { key: "afternoon", label: "1-5 PM" },
       { key: "evening", label: "After 5 PM" },
     ];
 

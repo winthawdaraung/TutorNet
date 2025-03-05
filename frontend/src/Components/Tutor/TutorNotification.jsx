@@ -7,77 +7,68 @@ const TutorNotification = () => {
   const [reply, setReply] = useState("");
   const [studyLink, setStudyLink] = useState("");
 
-  // Open Accept Popup
   const handleAcceptClick = (request) => {
     setSelectedRequest(request);
   };
 
-  // Close Popup
   const closePopup = () => {
     setSelectedRequest(null);
     setReply("");
     setStudyLink("");
   };
 
-  // Handle Send Reply (Only if fields are filled)
   const handleSend = () => {
     if (!reply.trim() || !studyLink.trim()) return;
     alert(`Reply: ${reply}\nStudy Link: ${studyLink}`);
     closePopup();
   };
 
-  // Handle Decline (Remove Notification)
   const handleDecline = (id) => {
     setRequests((prev) => prev.filter((req) => req.id !== id));
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center">
-      {/* Main Container */}
-      <div className="w-full max-w-5xl px-6 md:px-12 lg:px-20 py-10">
-        {/* Page Title */}
+    <div className="min-h-screen bg-gray-100 flex justify-center p-4 md:p-8">
+      <div className="w-full max-w-5xl px-4 md:px-8 py-6">
         <h2 className="text-3xl font-bold mb-6 text-center md:text-left">
           Study Requests
         </h2>
 
-        {/* If No Requests Remain */}
         {requests.length === 0 && (
           <p className="text-gray-600 text-center">No pending requests</p>
         )}
 
-        {/* Request Cards */}
         {requests.map((request) => (
           <div
             key={request.id}
-            className="bg-white border border-gray-300 rounded-lg p-6 mb-6 flex flex-col md:flex-row items-start w-full shadow-md relative"
+            className="bg-white border border-gray-300 rounded-lg p-6 mb-6 shadow-md flex flex-col md:flex-row md:items-start w-full relative"
           >
-            {/* Student Profile Image */}
-            <div className="mb-4 md:mb-0 md:mr-6 flex-shrink-0">
+            <div className="w-full flex flex-col items-center md:items-start md:flex-row">
               <img
                 src={request.profileImageUrl}
                 alt="Student profile"
-                className="w-32 h-32 object-cover rounded-lg border border-gray-300"
+                className="w-24 h-24 md:w-32 md:h-32 object-cover rounded-lg border border-gray-300 mb-4 md:mb-0 md:mr-6"
               />
+              <div className="flex flex-col flex-grow text-center md:text-left w-full">
+                <p className="mb-2 font-medium">
+                  <strong>Student Name:</strong> {request.studentName}
+                </p>
+                <p className="mb-2 font-medium">
+                  <strong>Message:</strong> {request.studentText}
+                </p>
+                <p className="mb-2 font-medium">
+                  <strong>Subject:</strong> {request.subject}
+                </p>
+                <p className="mb-2 font-medium">
+                  <strong>Time:</strong> {request.time}
+                </p>
+                <p className="mb-2 font-medium">
+                  <strong>Date:</strong> {request.date}
+                </p>
+              </div>
             </div>
 
-            {/* Request Details */}
-            <div className="flex flex-col justify-center flex-grow text-center md:text-left">
-              <p className="mb-2">
-                <strong>Student Name:</strong> {request.studentName}
-              </p>
-              <p className="mb-2">
-                <strong>Message:</strong> {request.studentText}
-              </p>
-              <p className="mb-2">
-                <strong>Subject:</strong> {request.subject}
-              </p>
-              <p className="mb-4">
-                <strong>Time:</strong> {request.time}
-              </p>
-            </div>
-
-            {/* Buttons Positioned at Bottom-Right */}
-            <div className="absolute bottom-6 right-6 flex gap-4">
+            <div className="flex justify-center md:absolute md:bottom-6 md:right-6 gap-4 mt-4 md:mt-0">
               <button
                 onClick={() => handleDecline(request.id)}
                 className="bg-red-500 text-white px-4 py-2 rounded transition-transform transform hover:scale-105 hover:bg-red-600"
@@ -94,15 +85,13 @@ const TutorNotification = () => {
           </div>
         ))}
 
-        {/* Accept Request Popup */}
         {selectedRequest && (
-          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
+          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center px-4">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
               <h2 className="text-xl font-bold mb-4 text-center">
                 Accept Student Request
               </h2>
 
-              {/* Reply Input */}
               <textarea
                 className="w-full border border-gray-300 rounded p-2 mb-4"
                 placeholder="Reply back..."
@@ -111,7 +100,6 @@ const TutorNotification = () => {
                 onChange={(e) => setReply(e.target.value)}
               />
 
-              {/* Contact Link Input */}
               <input
                 type="text"
                 className="w-full border border-gray-300 rounded p-2 mb-4"
@@ -120,7 +108,6 @@ const TutorNotification = () => {
                 onChange={(e) => setStudyLink(e.target.value)}
               />
 
-              {/* Popup Buttons */}
               <div className="flex justify-between">
                 <button
                   onClick={closePopup}

@@ -1,108 +1,201 @@
 import { useState } from "react";
-import { FaSearch, FaBookOpen, FaGlobe, FaChalkboardTeacher } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import StudentNavbar from "../../Components/Student/StudentNavbar/StudentNavbar";
-import Footer from "../../Components/homeComponents/footer/Footer";
+import { FaUser, FaEnvelope, FaLock, FaIdCard, FaUniversity } from "react-icons/fa";
 
-const StudentSearchPage = () => {
-  const [subject, setSubject] = useState("");
+const RegisterStudentPage = () => {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    studentId: "",
+    university: "",
+    year: "",
+  });
+
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [showTerms, setShowTerms] = useState(false); // ✅ ใช้ state นี้เปิด/ปิด Modal
   const navigate = useNavigate();
 
-  const handleSearch = () => {
-    if (subject.trim()) {
-      navigate("/student-search-results");
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!acceptTerms) {
+      alert("Please accept the Terms & Conditions.");
+      return;
     }
+    alert(`Student Registered: ${JSON.stringify(formData)}`);
+    navigate("/login");
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="min-h-screen flex flex-col bg-white"
-    >
-      {/* Navbar */}
-      <StudentNavbar />
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md bg-white rounded-lg shadow-lg p-8 border border-gray-200 text-center"
+      >
+        <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} transition={{ duration: 0.5 }}>
+          <h2 className="text-3xl font-bold text-gray-900">
+            Join as a <span className="text-[#00BFA5]">Student</span>
+          </h2>
+          <p className="text-gray-500 mt-2">Find the best tutors for your learning journey.</p>
+        </motion.div>
 
-      {/* Hero Section */}
-      <div className="w-full bg-[#00BFA5] text-white py-16 px-6 flex flex-col items-center text-center sm:text-left sm:px-12 lg:px-20 rounded-b-3xl shadow-md">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="max-w-3xl"
-        >
-          <h1 className="text-4xl sm:text-5xl font-bold leading-tight">
-            Find Your <span className="text-white">Perfect Tutor</span>
-          </h1>
-
-          {/* ข้อความรอง */}
-          <p className="text-lg text-[#F8F8F8] opacity-90 mt-4 tracking-wide">
-            Learn from experienced professionals in subjects you love.
-          </p>
-          <p className="text-lg text-[#F8F8F8] opacity-90 mt-2 tracking-wide">
-            Choose from expert tutors in various subjects and improve your skills today!
-          </p>
-
-          {/* Search Box */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="relative w-full max-w-sm sm:max-w-lg mx-auto sm:mx-0 mt-10"
-          >
+        <form className="space-y-5 mt-6" onSubmit={handleSubmit}>
+          {/* Full Name */}
+          <div className="relative">
+            <FaUser className="absolute left-3 top-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search for a subject..."
-              className="w-full pl-5 pr-20 py-4 rounded-full shadow-lg text-gray-700 focus:ring-4 focus:ring-white focus:outline-none bg-white"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
+              name="fullName"
+              placeholder="Full Name"
+              className="w-full pl-10 pr-4 py-3 border rounded-full focus:ring-2 focus:ring-[#00BFA5] bg-gray-100"
+              value={formData.fullName}
+              onChange={handleChange}
+              required
             />
-            <button
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-[#008F7A] text-white p-3 rounded-full shadow hover:bg-[#007566] transition"
-              onClick={handleSearch}
-            >
-              <FaSearch />
-            </button>
-          </motion.div>
-        </motion.div>
-      </div>
+          </div>
 
-      {/* Popular Subjects Section (แก้ปัญหาการ์ดซ้อนกัน) */}
-      <div className="bg-white text-gray-900 py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-medium mb-8">Popular Subjects</h2>
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6 md:gap-8 lg:gap-10 flex-wrap">
-            {[
-              { name: "Mathematics", icon: <FaBookOpen />, description: "Master equations with expert guidance." },
-              { name: "English", icon: <FaGlobe />, description: "Improve your writing and speaking fluency." },
-              { name: "Programming", icon: <FaChalkboardTeacher />, description: "Learn coding with real-world projects." },
-              { name: "Business", icon: <FaBookOpen />, description: "Understand market trends and strategies." },
-            ].map((subjectItem) => (
-              <motion.button
-                key={subjectItem.name}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="p-6 bg-gray-50 rounded-xl shadow-md hover:shadow-lg border border-gray-300/50 transition-transform duration-300 ease-in-out flex flex-col items-center justify-center w-full sm:w-auto"
-                onClick={() => {
-                  setSubject(subjectItem.name);
-                  navigate("/student-search-results");
+          {/* Email */}
+          <div className="relative">
+            <FaEnvelope className="absolute left-3 top-4 text-gray-400" />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              className="w-full pl-10 pr-4 py-3 border rounded-full focus:ring-2 focus:ring-[#00BFA5] bg-gray-100"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Password */}
+          <div className="relative">
+            <FaLock className="absolute left-3 top-4 text-gray-400" />
+            <input
+              type="password"
+              name="password"
+              placeholder="Create a Password"
+              className="w-full pl-10 pr-4 py-3 border rounded-full focus:ring-2 focus:ring-[#00BFA5] bg-gray-100"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Student ID */}
+          <div className="relative">
+            <FaIdCard className="absolute left-3 top-4 text-gray-400" />
+            <input
+              type="text"
+              name="studentId"
+              placeholder="Student ID"
+              className="w-full pl-10 pr-4 py-3 border rounded-full focus:ring-2 focus:ring-[#00BFA5] bg-gray-100"
+              value={formData.studentId}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Institution / University */}
+          <div className="relative">
+            <FaUniversity className="absolute left-3 top-4 text-gray-400" />
+            <input
+              type="text"
+              name="university"
+              placeholder="University Name"
+              className="w-full pl-10 pr-4 py-3 border rounded-full focus:ring-2 focus:ring-[#00BFA5] bg-gray-100"
+              value={formData.university}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Terms & Conditions Checkbox */}
+          <div className="flex items-start text-left">
+            <input
+              type="checkbox"
+              id="terms"
+              className="mt-1 mr-2 accent-[#00BFA5]"
+              checked={acceptTerms}
+              onChange={() => setAcceptTerms(!acceptTerms)}
+            />
+            <label htmlFor="terms" className="text-gray-600 text-sm">
+              I agree to the{" "}
+              <span
+                className="text-[#00BFA5] cursor-pointer hover:underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowTerms(true); // ✅ เปิด Modal
                 }}
               >
-                <div className="text-5xl text-[#00BFA5] mb-3">{subjectItem.icon}</div>
-                <p className="text-gray-900 font-medium text-lg">{subjectItem.name}</p>
-                <p className="text-gray-500 text-sm mt-2 text-center">{subjectItem.description}</p>
-              </motion.button>
-            ))}
+                Terms & Conditions
+              </span>
+            </label>
           </div>
-        </div>
-      </div>
 
-      {/* Footer */}
-      <Footer />
-    </motion.div>
+          {/* Submit Button */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-full py-3 bg-[#00BFA5] text-white font-semibold rounded-full hover:bg-teal-600 transition duration-300 shadow-md"
+            type="submit"
+          >
+            Register as Student
+          </motion.button>
+
+          {/* Back to Role Selection - ✅ ปรับ underline ให้เชื่อมกัน */}
+<div className="flex justify-center mt-6">
+  <button
+    className="text-[#00BFA5] font-semibold inline-flex items-center 
+               hover:underline decoration-2 decoration-solid underline-offset-4 transition duration-200"
+    onClick={() => navigate("/register")}
+  >
+    <span className="mr-2">← Back to Role Selection</span>
+  </button>
+</div> 
+        </form>
+      </motion.div>
+
+      {/* ✅ Modal Terms & Conditions */}
+      {showTerms && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white rounded-lg shadow-lg w-96 p-6 border border-gray-300"
+          >
+            {/* Header */}
+            <h2 className="text-xl font-bold text-center text-gray-900 mb-4">Terms & Conditions</h2>
+
+            {/*Terms & Conditions */}
+            <div className="text-left text-gray-700 space-y-3">
+              <p><span className="font-bold text-[#00BFA5]">Platform Use:</span> This platform connects students and tutors but does not verify tutor qualifications.</p>
+              <p><span className="font-bold text-[#00BFA5]">Payments:</span> All transactions are managed directly between students and tutors. We are not responsible for any payment issues, refunds, or disputes.</p>
+              <p><span className="font-bold text-[#00BFA5]">User Conduct:</span> Users must interact professionally and respectfully. Any inappropriate behavior may result in account suspension.</p>
+              <p><span className="font-bold text-[#00BFA5]">Privacy:</span> We collect only essential information for account creation and matching purposes. No financial data is stored or processed.</p>
+            </div>
+
+            {/* Close button */}
+            <div className="mt-6 flex justify-between">
+              <button onClick={() => setShowTerms(false)} className="px-4 py-2 text-gray-600 font-semibold hover:text-gray-900">Close</button>
+              <button onClick={() => { setAcceptTerms(true); setShowTerms(false); }} className="px-4 py-2 bg-[#00BFA5] text-white font-semibold rounded-full hover:bg-teal-600 transition duration-300">Accept & Close</button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+      
+
+    </div>
   );
 };
 
-export default StudentSearchPage;
+export default RegisterStudentPage;

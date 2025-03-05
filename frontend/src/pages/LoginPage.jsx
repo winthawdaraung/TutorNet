@@ -98,14 +98,7 @@ const LoginPage = () => {
             Sign In
           </motion.button>
 
-          {/* Google Login */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="w-full flex items-center justify-center gap-2 py-3 border mt-3 rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200 transition duration-300 shadow-sm"
-          >
-            <FaGoogle className="text-red-500" /> Sign in with Google
-          </motion.button>
+         
         </form>
 
         <div className="text-center mt-6">
