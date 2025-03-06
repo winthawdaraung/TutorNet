@@ -25,6 +25,7 @@ uploadDirs.forEach(dir => {
     }
 });
 
+
 // CORS configuration
 app.use(cors({
     origin: 'http://localhost:5173', 
@@ -37,7 +38,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Routes
 app.use('/api/students', studentsRouter);
@@ -53,8 +54,15 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-    connectDB();
-});
+// app.listen(PORT, () => {
+//     console.log(`Server running on http://localhost:${PORT}`);
+//     connectDB();
+// });
 
+connectDB().then(() => {
+  app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+  });
+}).catch((error) => {
+  console.error("Database connection failed:", error);
+});

@@ -204,28 +204,72 @@ export const updateTutorProfile = async (req, res) => {
     }
 };
 
-//Search Tutor now using Tutor Name!
+//For Searching Tutors
+// export const searchTutors = async (req, res) => {
+//     try {
+//         const searchQuery = req.query.q || ""; // Get the search query from the frontend
+//         const tutors = await Tutor.find({
+//             fullName: {$regex: searchQuery, $options: "i"} //case insensitive
+//         });
+//         // const {subject, /*location, days,*/ institution} = req.query;
+//         // //const {fullName} = req.query;
+//         // let query = {};
 
-export const searchTutors = async (req, res) => {
-    try {
-        const query = req.query.name;
+//         // //if (fullName) query.name = { $regex: fullName, $options: "i" }; // Case-insensitive search//
+//         // if (subject) query.subjects = { $regex: subject, $options: "i" }; // Subject search
+//         // if (institution) query.institution = {$regex: institution, $options: "i"};
+//         // //if (location) query.location = { $regex: location, $options: "i" }; Location search
+//         // //if (days) query["availability.days"] = { $in: days.split(",") }; Available days
+//         // //if (minRating) query.rating = { $gte: parseFloat(minRating) }; // Minimum rating filter//
 
-        if (!query) {
-            return res.status(400).json({message: "Query is required"});
-        }
+//         // const tutors = await Tutor.find(query);
+//         // Check if no tutors match the search criteria
+//         if (tutors.length === 0) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: "No tutors found matching the search criteria"
+//             });
+//         }
 
-        const regex = new RegExp(query, "i"); // Case-insensitive search
-        const tutors = await Tutor.find({ 
-            fullName: {$regex: '^${query}', $options:"i"},
-        });
+//         res.status(200).json({
+//             success: true,
+//             data: tutors
+//         });
+//     } catch (error) {
+//         res.status(500).json({ success: false, message: "Server error" });
+//     }
+// };
 
-        if (tutors.length === 0) {
-            return res.status(404).json({message: "No tutors found with that name."});
-        }
+// export const searchTutors = async (req, res) => {
+//     try {
+//         const { query = "", page = 1, limit = 3 } = req.query; // Get query, page, and limit from the frontend
+//         const skip = (page - 1) * limit; // Pagination logic (skip)
+//         const totalTutors = await Tutor.countDocuments({ fullName: { $regex: query, $options: "i" } }); // Count total matching tutors
 
-        res.status(200).json({tutors});
-    } catch (error) {
-        console.error("Error in searchTutors:", error);
-        res.status(500).json({message: "Error searching tutors"});
-    }
-};
+//         const tutors = await Tutor.find({
+//             fullName: { $regex: query, $options: "i" } // case-insensitive search
+//         })
+//         .skip(skip)
+//         .limit(Number(limit)); // Limit the number of results based on the frontend's request
+
+//         if (tutors.length === 0) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: "No tutors found matching the search criteria"
+//             });
+//         }
+
+//         const totalPages = Math.ceil(totalTutors / limit); // Calculate total pages
+
+//         res.status(200).json({
+//             success: true,
+//             data: tutors,
+//             totalPages,
+//             currentPage: Number(page),
+//         });
+//     } catch (error) {
+//         console.error("Error in searchTutors:", error);
+//         res.status(500).json({ success: false, message: "Server error" });
+//     }
+// };
+

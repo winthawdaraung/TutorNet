@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import axios from "axios";
 import { motion } from "framer-motion";
+import axios from "axios";
 import StudentNavbar from "../../Components/Student/StudentNavbar/StudentNavbar";
 import Footer from "../../Components/homeComponents/footer/Footer";
 import { FaSearch } from "react-icons/fa";
@@ -11,35 +11,59 @@ import Pagination from "../../Components/Student/StudentSearchResult/Pagination"
 
 const tutorsPerPage = 3; // ✅ Number of tutors per page
 
+
 const StudentSearchResultPage = () => {
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
-  const [tutors, setTutors] = useState([]);
-  const [ loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-
+//for Search
+// const [tutors,setTutors] = useState([]);
+// const [totalPages, setTotalPages] = useState(1);
+// const [error, setError] = useState([]);// state to manage error
   useEffect(() => {
     window.scrollTo(0, 0);
     const params = new URLSearchParams(location.search);
     const query = params.get("query") || "";
-    setSearchQuery(query);
+    //Fetch the data from the backend
+    //setSearchQuery(query);// set search query if the URL contains a query parameter
 
-    if (query) {
-      fetchTutors(query);
-    }
-  }, [location.search]);
+  //   const fetchTutors = async () => {
+  //     try {
+  //       const response = await axios.get("http://localhost:5000/api/tutors/search", { 
+  //         params: { 
+  //           query,
+  //           page: currentPage,
+  //           limit: tutorsPerPage,
+  //          }
+  //       });
+  //       //handle case if no tutors found
+  //       if (response.data.success /*&& response.data.tutors.length > 0*/) {
+  //         setTutors(response.data.data);
+  //         setTotalPages(response.data.totalPages);
+  //         setError("");
+  //       }else{
+  //         setTutors([]);
+  //         setError("No Tutors found!!!");
+  //       }
+  //       // setTutors(response.data);
+  //       // if (tutors.length === 0){
+  //       //   setError("There is No Tutor Found!")
+  //       // }
+  //     } 
+  //     catch (error) {
+  //       // if (error.response.status === 404){
+  //       //   setError("No Tutors Found!");
+  //       // }
+  //       console.error("Error fetching tutors:", error);
+  //       setError("An error occured while fetching tutors.")
+  //     }
+  //   };
+  //   fetchTutors();
+  // }, [location.search,currentPage]); 
 
-  const fetchTutors = async (query) => {
-    setLoading(true);
-    try{
-      const response = await axios.get('http://localhost:5000/api/tutors/search?query=${query}');
-      setTutors(response.data);
-    } catch (error) {
-      console.error("Error fetching tutors:", error);
-      setTutors([])
-    }
-    setLoading(false);
-  }
+  // const handlePageChange = (pageNumber) => {
+  //   setCurrentPage(pageNumber);
+  // }
 
   // ✅ Pagination Logic
   const indexOfLastTutor = currentPage * tutorsPerPage;
@@ -93,7 +117,7 @@ const StudentSearchResultPage = () => {
 
           {/* ✅ Pagination (Always at the Bottom) */}
           <div className="mt-auto flex justify-center pt-10">
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
           </div>
         </motion.div>
       </div>

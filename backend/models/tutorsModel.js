@@ -15,7 +15,7 @@ const notificationSchema = new mongoose.Schema({
 
 const subjectSchema = new mongoose.Schema({
   subject: { type: String, required: true },
-  topic: { type: String, required: true }
+  topic: { type: String, required: true, default: ''}
 });
 
 const availabilitySchema = new mongoose.Schema({

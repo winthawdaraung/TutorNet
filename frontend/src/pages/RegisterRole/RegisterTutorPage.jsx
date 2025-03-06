@@ -44,10 +44,12 @@ const RegisterTutorPage = () => {
         navigate("/login");
       } else {
         setError(response.error);
+        alert(response.error);
       }
     } catch (error) {
       console.error("Error registering tutor", error);
       setError(error.message);
+      alert("Error registering tutor", error)
     }
   };
 

@@ -5,6 +5,7 @@ const TutorstudentreqData = [
     studentText: "Hello, I'd like help with math topics before my exam.",
     subject: "Math Tutoring",
     time: "10:00 AM - 11:00 AM",
+    date: "2025-09-15",
     profileImageUrl: "https://randomuser.me/api/portraits/men/1.jpg",
   },
   {
@@ -13,6 +14,7 @@ const TutorstudentreqData = [
     studentText: "I need assistance with English essay writing.",
     subject: "English Practice",
     time: "1:00 PM - 2:00 PM",
+    date: "2025-09-17",
     profileImageUrl: "https://randomuser.me/api/portraits/women/2.jpg",
   },
   {
@@ -22,6 +24,7 @@ const TutorstudentreqData = [
       "I have a test next week and need to review some science concepts.",
     subject: "Science Review",
     time: "3:00 PM - 4:00 PM",
+    date: "2025-09-17",
     profileImageUrl: "https://randomuser.me/api/portraits/men/3.jpg",
   },
 ];

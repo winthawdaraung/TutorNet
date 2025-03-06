@@ -1,6 +1,6 @@
 export const registerTutor = async (formData) => {
     try {
-        const response = await fetch(`/api/tutors/register`, {
+        const response = await fetch(`http://localhost:5000/api/tutors/register`, {
             method: "POST",
             headers: { 
                 "Content-Type": "application/json"
@@ -10,6 +10,8 @@ export const registerTutor = async (formData) => {
         });
         const data = await response.json();
         
+    console.log(data)
+
         if (!response.ok) {
             return { 
                 success: false, 

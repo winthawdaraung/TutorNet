@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -29,15 +30,53 @@ const iconVariants = {
   },
 };
 
-const StudentSearchPage = () => {
-  const [subject, setSubject] = useState("");
-  const navigate = useNavigate();
 
-  const handleSearch = () => {
-    if (subject.trim()) {
-      navigate(`/student-search-results?query=${subject}`);
-    }
-  };
+// const StudentSearchPage = () => {
+//   const [subject, setSubject] = useState("");
+//   // const [institution, setInstitution] = useState("");
+//   //const [fullName, setfullName] =useState("")
+//   const[tutors, setTutors] = useState([]);
+//   const navigate = useNavigate();
+
+// //hande Searching
+//   //const [tutors, setTutors] = useState([]);
+//   const handleSearch = async () => {
+//     //search subject
+//     if (subject.trim()) {
+//       try {
+//         const response = await axios.get("http://localhost:5000/api/tutors/search", { 
+//           params: { query: subject}
+//             //params: {query: fullName}
+//         });
+//         // Set the tutors from the response
+//         setTutors(response.data);
+//         navigate(`/student-search-results?query=${subject}`);
+//         //navigate(`/student-search-results?query=${fullName}`);
+//       } catch (error) {
+//           console.error("Search error:", error);
+//       //   if (tutors.length === 0) {
+//       //     return res.status(404).json({
+//       //         success: false,
+//       //         message: "No tutors found matching the search criteria"
+//       //     });
+//       // }
+//       }
+//     }
+
+//     // //search institution
+//     // if (institution.trim()) {
+//     //   try {
+//     //     const response = await axios.get("http://localhost:5000/api/tutors", { 
+//     //       params: { query: instituion}
+//     //     });
+//     //     // Set the tutors from the response
+//     //     setTutors(response.data);
+//     //     navigate(`/student-search-results?query=${institution}`);
+//     //   } catch (error) {
+//     //     console.error("Search error:", error);
+//     //   }
+//     // }
+//   };
 
   return (
     <motion.div className="min-h-screen flex flex-col bg-white">
@@ -79,6 +118,7 @@ const StudentSearchPage = () => {
                   className="flex-1 bg-transparent focus:outline-none text-gray-900 text-lg"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
+                  //onChange={(e) => setfullName(e.target.value)}
                 />
                 <motion.button
                   whileHover={{ scale: 1.1 }}
@@ -130,7 +170,9 @@ const StudentSearchPage = () => {
                 className="p-8 bg-white rounded-2xl shadow-md border border-gray-200 transition-transform duration-300 ease-in-out flex flex-col items-center gap-4"
                 onClick={() => {
                   setSubject(subjectItem.name);
+                  //setfullName(fullName.name);
                   navigate(`/student-search-results?query=${subjectItem.name}`);
+                  //navigate(`/student-search-results?query=${fullName.name}`);
                 }}
               >
                 {/* ✅ Subject Icon */}

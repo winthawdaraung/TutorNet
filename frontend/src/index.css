@@ -3,6 +3,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes dotsAnimation {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
 @layer components {
   .primary-btn {
     @apply bg-[#E3B505] font-semibold 

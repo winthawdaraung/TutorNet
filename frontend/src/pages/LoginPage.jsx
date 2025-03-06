@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { FaUser, FaLock, FaGoogle } from "react-icons/fa";
-import { handleLogin } from "../handle/common";
-import { getTutorProfile } from "../handle/tutor";
+import { FaUser, FaLock } from "react-icons/fa";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -11,32 +9,43 @@ const LoginPage = () => {
   const [error, setError] = useState(""); // To handle login errors
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    
+  // Mock login function (Replace with actual API call)
+  const handleLogin = async () => {
+    setError(""); // Clear previous errors
+
     try {
-      const result = await handleLogin(email, password);
+      // Replace with actual API request
+      const response = await fakeLoginAPI(email, password);
       
-      if (result.success) {
-        if (result.user.role === "tutor") {
-          // Fetch tutor profile after successful login
-          const profileResult = await getTutorProfile();
-          if (profileResult.success) {
-            // Store complete profile data
-            localStorage.setItem('tutorProfile', JSON.stringify(profileResult.data));
-          }
-          navigate("/tutor/notifications");
-        } else if (result.user.role === "student") {
-          navigate("/studentafterlogin");
+      if (response.success) {
+        if (response.role === "student") {
+          navigate("/student-profile");
+        } else if (response.role === "tutor") {
+          navigate("/tutor/profile");
+        } else {
+          setError("Invalid role.");
         }
       } else {
-        setError(result.error);
+        setError("Invalid email or password.");
       }
-    } catch (error) {
-      console.error("Error logging in", error);
-      setError("An error occurred during login. Please try again.");
+    } catch {
+      setError("An error occurred. Please try again.");
     }
+  };
+
+  // Fake API function for demonstration
+  const fakeLoginAPI = (email, password) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        if (email === "student@example.com" && password === "password") {
+          resolve({ success: true, role: "student" });
+        } else if (email === "tutor@example.com" && password === "password") {
+          resolve({ success: true, role: "tutor" });
+        } else {
+          resolve({ success: false });
+        }
+      }, 1000); // Simulate network delay
+    });
   };
 
   return (
@@ -54,7 +63,7 @@ const LoginPage = () => {
 
         {error && <p className="text-red-500 mt-3">{error}</p>}
 
-        <form className="space-y-5 mt-6" onSubmit={handleSubmit}>
+        <form className="space-y-5 mt-6" onSubmit={(e) => e.preventDefault()}>
           <div className="relative">
             <FaUser className="absolute left-3 top-4 text-gray-400" />
             <input
@@ -93,19 +102,12 @@ const LoginPage = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="w-full py-3 bg-[#00BFA5] text-white font-semibold rounded-full hover:bg-teal-600 transition duration-300 shadow-md"
-            type="submit"
+            onClick={handleLogin}
           >
             Sign In
           </motion.button>
 
-          {/* Google Login */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="w-full flex items-center justify-center gap-2 py-3 border mt-3 rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200 transition duration-300 shadow-sm"
-          >
-            <FaGoogle className="text-red-500" /> Sign in with Google
-          </motion.button>
+         
         </form>
 
         <div className="text-center mt-6">

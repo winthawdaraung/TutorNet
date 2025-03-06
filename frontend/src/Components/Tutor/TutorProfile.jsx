@@ -1,35 +1,13 @@
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import tutorProfileDataMock from "../../mockData/TutorProfileData";
+import tutorProfileData from "../../mockData/TutorProfileData";
 import defaultProfile from "../../assets/tutor/defaultProfile.png";
-import { getTutorProfile } from "../../handle/tutor";
-import { useEffect, useState } from "react";
 
 function TutorProfile() {
   const navigate = useNavigate();
-  const [tutorProfileData, setTutorProfileData] = useState(tutorProfileDataMock);
-
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await getTutorProfile();
-        if (response.success) {
-          setTutorProfileData(response.data);
-        } else {
-          console.error("Failed to fetch tutor profile:", response.error);
-          setTutorProfileData(tutorProfileDataMock);
-        }
-      } catch (error) {
-        console.error("Error fetching tutor profile:", error);
-        setTutorProfileData(tutorProfileDataMock);
-      }
-    };
-
-    fetchProfile();
+    window.scrollTo(0, 0);
   }, []);
-
-  if (!tutorProfileData) {
-    return <div>Loading...</div>;
-  }
 
   const {
     fullName,
@@ -67,8 +45,8 @@ function TutorProfile() {
   const renderAvailabilityTable = () => {
     const days = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
     const timeSlots = [
-      { key: "morning", label: "9-12 PM" },
-      { key: "afternoon", label: "12-5 PM" },
+      { key: "morning", label: "9-12 AM" },
+      { key: "afternoon", label: "1-5 PM" },
       { key: "evening", label: "After 5 PM" },
     ];
 
@@ -110,9 +88,10 @@ function TutorProfile() {
   };
 
   // If profileImageUrl is empty, use the default profile image
-  const displayProfileImage = profileImageUrl
-    ? `http://localhost:5000${profileImageUrl}`
-    : defaultProfile
+  const displayProfileImage =
+    profileImageUrl && profileImageUrl.trim()
+      ? profileImageUrl
+      : defaultProfile;
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -163,7 +142,7 @@ function TutorProfile() {
             <h2 className="text-xl font-semibold mb-1">CV</h2>
             {cv ? (
               <img
-                src={`http://localhost:5000${cv}`}
+                src={cv}
                 alt="Tutor CV"
                 className="max-w-full h-auto border border-gray-300"
               />
