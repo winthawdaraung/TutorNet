@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -11,21 +11,78 @@ import {
 } from "react-icons/fa";
 import StudentNavbar from "../../Components/Student/StudentNavbar/StudentNavbar";
 import Footer from "../../Components/homeComponents/footer/Footer";
-import userProfileData from "../../mockData/Student/StudentProfileData2";
+import userProfileDataMock from "../../mockData/Student/StudentProfileData2";
 import defaultProfile from "../../assets/tutor/defaultProfile.png";
+import { getStudentProfile, updateStudentProfile } from "../../handle/student";
 
 function EditStudentProfile() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState(userProfileData);
+  const [formData, setFormData] = useState(userProfileDataMock);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState();
+
+  const fetchProfile = async () => {
+    try {
+      const response = await getStudentProfile();
+      if (response.success) {
+        setFormData(response.data);
+        if (response.data.profileImageUrl) {
+          setPreviewImage(response.data.profileImageUrl);
+        }
+        else {
+          setPreviewImage(defaultProfile);
+        }
+      } else {
+        console.error("Failed to fetch student profile:", response.error);
+        setFormData(userProfileDataMock);
+      }
+    } catch (error) {
+      console.error("Error fetching student profile:", error);
+      setFormData(userProfileDataMock);
+    }
+  };
+
+  useEffect(() => { fetchProfile(); }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Profile Saved:", formData);
-    navigate("/student-profile");
+    const formDataToSend = new FormData();
+    
+    // Add text fields
+    const fields = ['fullName', 'institution', 'studentId', 'year', 'department'];
+    fields.forEach(field => {
+        formDataToSend.append(field, formData[field] || '');
+    });
+
+    // Add profile image if selected
+    if (selectedImage) {
+        formDataToSend.append('profileImage', selectedImage);
+    }
+
+    try {
+        const response = await updateStudentProfile(formDataToSend);
+        if (response.success) {
+            navigate("/student-profile");
+        } else {
+            console.error("Failed to update profile:", response.error);
+            alert(response.error); // Show error to user
+        }
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        alert(error.message); // Show error to user
+    }
   };
 
   const displayProfileImage =
@@ -61,11 +118,16 @@ function EditStudentProfile() {
                 className="cursor-pointer relative"
               >
                 <img
-                  src={displayProfileImage}
+                  src={previewImage || displayProfileImage}
                   alt="Profile"
                   className="w-24 h-24 md:w-32 md:h-32 object-cover rounded-full border border-gray-300"
                 />
-                <input type="file" className="hidden" />
+                <input 
+                  type="file" 
+                  onChange={handleImageChange}
+                  accept="image/*"
+                  className="hidden" 
+                />
                 <FaCamera className="text-gray-500 absolute bottom-2 right-2 text-xl" />
               </motion.label>
             </div>
@@ -85,7 +147,7 @@ function EditStudentProfile() {
                   placeholder: "Email Address",
                 },
                 {
-                  name: "university",
+                  name: "institution",
                   icon: <FaUniversity />,
                   placeholder: "Institution/University",
                 },
@@ -95,12 +157,12 @@ function EditStudentProfile() {
                   placeholder: "Student ID",
                 },
                 {
-                  name: "yearOfStudy",
+                  name: "year",
                   icon: <FaLayerGroup />,
                   placeholder: "Year of Study",
                 },
                 {
-                  name: "department",
+                  name: "department" ,
                   icon: <FaLayerGroup />,
                   placeholder: "Department",
                 },

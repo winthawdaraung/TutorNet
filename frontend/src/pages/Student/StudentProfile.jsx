@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -10,16 +10,43 @@ import {
 } from "react-icons/fa";
 import StudentNavbar from "../../Components/Student/StudentNavbar/StudentNavbar";
 import Footer from "../../Components/homeComponents/footer/Footer";
-import userProfileData from "../../mockData/Student/StudentProfileData2";
+import userProfileDataMock from "../../mockData/Student/StudentProfileData2";
 import defaultProfile from "../../assets/tutor/defaultProfile.png";
+
+import { getStudentProfile } from "../../handle/student";
+import { Placeholder } from "react-select/animated";
 
 function StudentProfile() {
   const navigate = useNavigate();
+
+  const [userProfileData, setUserProfileData] = useState(userProfileDataMock);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await getStudentProfile();
+      if (response.success) {
+        setUserProfileData(response.data);
+      } else {
+        console.error("Failed to fetch student profile:", response.error);
+        setUserProfileData(userProfileDataMock);
+      }
+    } catch (error) {
+      console.error("Error fetching student profile:", error);
+      setUserProfileData(userProfileDataMock);
+    }
+  };
+
+  useEffect(() => { fetchProfile(); }, []);
+  if (!setUserProfileData) {
+    return <div>Loading...</div>;
+  }
 
   const displayProfileImage =
     userProfileData.profileImageUrl && userProfileData.profileImageUrl.trim()
       ? userProfileData.profileImageUrl
       : defaultProfile;
+  
+  
 
   return (
     <AnimatePresence>
@@ -55,10 +82,10 @@ function StudentProfile() {
               {[
                 { label: userProfileData.fullName, icon: <FaUser /> },
                 { label: userProfileData.email, icon: <FaEnvelope /> },
-                { label: userProfileData.university, icon: <FaUniversity /> },
+                { label: userProfileData.institution, icon: <FaUniversity /> },
                 { label: userProfileData.studentId, icon: <FaIdCard /> },
-                { label: userProfileData.yearOfStudy },
-                { label: userProfileData.department, icon: <FaLayerGroup /> },
+                { label: `Year ${userProfileData.year}`, icon: <FaLayerGroup /> },
+                { label: userProfileData.department, icon: <FaLayerGroup /> , Placeholder: "Department" },
               ].map((field, index) => (
                 <motion.div
                   key={index}

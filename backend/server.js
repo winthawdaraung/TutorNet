@@ -42,15 +42,15 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // Routes
 app.use('/api/students', studentsRouter);
 app.use('/api/tutors', tutorsRouter);
-app.use('/api', userRouter);
+app.use('/api/users', userRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ 
-    success: false, 
-    message: err.message || 'Internal server error' 
-  });
+    console.error(err.stack);
+    res.status(500).json({ 
+        success: false, 
+        message: err.message || 'Internal server error' 
+    });
 });
 
 app.listen(PORT, () => {

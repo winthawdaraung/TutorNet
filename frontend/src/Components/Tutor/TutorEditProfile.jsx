@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Select from "react-select";
 import tutorProfileDataMock from "../../mockData/TutorProfileData";
 import defaultProfile from "../../assets/tutor/defaultProfile.png";
@@ -73,12 +73,12 @@ function EditProfile() {
           
           // Update preview images with current URLs
           if (response.data.profileImageUrl) {
-            setPreviewImage(`http://localhost:5000${response.data.profileImageUrl}`);
+            setPreviewImage(response.data.profileImageUrl);
           } else {
             setPreviewImage(defaultProfile);
           }
           if (response.data.cv) {
-            setCVPreview(`http://localhost:5000${response.data.cv}`);
+            setCVPreview(response.data.cv);
           }
           
           // Update form data when tutor profile is fetched

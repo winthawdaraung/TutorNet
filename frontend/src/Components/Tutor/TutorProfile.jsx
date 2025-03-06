@@ -30,9 +30,9 @@ function TutorProfile() {
   if (!tutorProfileData) {
     return <div>Loading...</div>;
   }
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  // useEffect(() => {
+  //   window.scrollTo(0, 0);
+  // }, []);
 
   const {
     fullName,
@@ -114,7 +114,7 @@ function TutorProfile() {
 
   // If profileImageUrl is empty, use the default profile image
   const displayProfileImage = profileImageUrl
-    ? `http://localhost:5000${profileImageUrl}`
+    ? profileImageUrl
     : defaultProfile
 
   return (
@@ -166,7 +166,7 @@ function TutorProfile() {
             <h2 className="text-xl font-semibold mb-1">CV</h2>
             {cv ? (
               <img
-                src={`http://localhost:5000${cv}`}
+                src={cv}
                 alt="Tutor CV"
                 className="max-w-full h-auto border border-gray-300"
               />

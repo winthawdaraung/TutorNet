@@ -66,11 +66,11 @@ const studentRequestSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const tutorSchema = new mongoose.Schema({
-    fullName: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    fullName: { type: String, required: true, trim: true },
+    email: { type: String, required: true, unique: true, trim: true },
     password: { type: String, required: true },
     role: { type: String, default: "tutor" },
-    institution: { type: String, required: true },
+    institution: { type: String, required: true, trim: true },
     qualification: { type: String, default: "" },
     experience: { type: Number, required: true },
     subjectsOffered: [subjectSchema],
@@ -87,6 +87,8 @@ const tutorSchema = new mongoose.Schema({
     notifications: [notificationSchema],
     reviews: [reviewSchema],
     studentRequests: { type: [studentRequestSchema], default: [] },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date }
 }, { timestamps: true });
 
 // Add any pre-save hooks or methods here if needed

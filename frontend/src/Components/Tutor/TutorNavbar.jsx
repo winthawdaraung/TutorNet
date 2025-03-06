@@ -1,12 +1,7 @@
-import { Link, Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import { SiStudyverse } from "react-icons/si";
-import TutormyProfilePage from "../../pages/Tutor/Tutormyprofilepage";
-import TutorEditProfile from "../../pages/Tutor/Tutoreditmyprofilepage";
-import TutorNotificationPage from "../../pages/Tutor/Tutornotificationpage";
-import { handleLogout } from "../../handle/common";
-import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { SiStudyverse } from "react-icons/si";
+import { logout } from "../../handle/common";
+import { useState } from "react";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { FiMenu, FiX } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,8 +11,8 @@ const TutorNavbar = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
-  const logout = async () => {
-    const response = await handleLogout();
+  const handleLogout = async () => {
+    const response = await logout();
     if (response.success) {
       navigate("/login");
     } else {
@@ -79,7 +74,7 @@ const TutorNavbar = () => {
           <li>
             <button
               className="bg-[#00BFA5] text-white px-4 py-2 rounded-full hover:bg-[#009e88] transition duration-300 font-semibold"
-              onClick={() => logout()}
+              onClick={() => handleLogout()}
             >
               Log out
             </button>
@@ -136,7 +131,7 @@ const TutorNavbar = () => {
               <li>
                 <button
                   className="bg-[#00BFA5] text-white px-6 py-2 rounded-full hover:bg-[#009e88] transition duration-300 font-semibold"
-                  onClick={() => handleNavigate("/tutor/logout")}
+                  onClick={handleLogout}
                 >
                   Log out
                 </button>

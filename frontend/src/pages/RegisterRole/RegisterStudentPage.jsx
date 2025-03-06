@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaUser, FaEnvelope, FaLock, FaIdCard, FaUniversity } from "react-icons/fa";
+import { registerStudent } from "../../handle/student"
 
 const RegisterStudentPage = () => {
   const [formData, setFormData] = useState({
@@ -9,26 +10,40 @@ const RegisterStudentPage = () => {
     email: "",
     password: "",
     studentId: "",
-    university: "",
+    institution: "",
     year: "",
   });
+
+  const [error, setError] = useState("");
 
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [showTerms, setShowTerms] = useState(false); // ✅ ใช้ state นี้เปิด/ปิด Modal
   const navigate = useNavigate();
 
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!acceptTerms) {
-      alert("Please accept the Terms & Conditions.");
+      // alert("Please accept the Terms & Conditions.");
+      setError("Please accept the Terms & Conditions.");
       return;
     }
-    alert(`Student Registered: ${JSON.stringify(formData)}`);
-    navigate("/login");
+    
+    try {
+      const response = await registerStudent(formData);
+      if (response.success) {
+        navigate("/login");
+      } else {
+        setError(response.error);
+      }
+    } catch (error) {
+      console.error("Error registering student:", error);
+      setError(error.message);
+    }
   };
 
   return (
@@ -45,6 +60,8 @@ const RegisterStudentPage = () => {
           </h2>
           <p className="text-gray-500 mt-2">Find the best tutors for your learning journey.</p>
         </motion.div>
+
+        {error && <p className="text-red-500 mt-3">{error}</p>}
 
         <form className="space-y-5 mt-6" onSubmit={handleSubmit}>
           {/* Full Name */}
@@ -108,13 +125,19 @@ const RegisterStudentPage = () => {
             <FaUniversity className="absolute left-3 top-4 text-gray-400" />
             <input
               type="text"
-              name="university"
+              name="institution"
               placeholder="University Name"
               className="w-full pl-10 pr-4 py-3 border rounded-full focus:ring-2 focus:ring-[#00BFA5] bg-gray-100"
-              value={formData.university}
+              value={formData.institution}
               onChange={handleChange}
               required
             />
+          </div>
+
+          {/* Year of Study */}
+          <div className="relative">
+            <FaUniversity className="absolute left-3 top-4 text-gray-400" />
+            <input type="number" name="year" placeholder="Year of Study" className="w-full pl-10 pr-4 py-3 border rounded-full focus:ring-2 focus:ring-[#00BFA5] bg-gray-100" value={formData.year} onChange={handleChange} required />
           </div>
 
           {/* Terms & Conditions Checkbox */}

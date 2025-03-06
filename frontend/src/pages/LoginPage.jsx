@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaUser, FaLock, FaGoogle } from "react-icons/fa";
-import { handleLogin } from "../handle/common";
+import { login } from "../handle/common";
 import { getTutorProfile } from "../handle/tutor";
 
 const LoginPage = () => {
@@ -16,7 +16,7 @@ const LoginPage = () => {
     setError("");
     
     try {
-      const result = await handleLogin(email, password);
+      const result = await login(email, password);
       
       if (result.success) {
         if (result.user.role === "tutor") {
@@ -28,7 +28,7 @@ const LoginPage = () => {
           }
           navigate("/tutor/notifications");
         } else if (result.user.role === "student") {
-          navigate("/studentafterlogin");
+          navigate("/student-search");
         }
       } else {
         setError(result.error);

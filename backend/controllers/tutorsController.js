@@ -4,6 +4,8 @@ import { hashPassword } from "../config/utils.js";
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import cloudinary from "../config/cloudinary.js";
+import { Readable } from 'stream';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,10 +24,11 @@ export const registerTutor = async (req, res) => {
                 message: "User with this email already exists!" 
             });
         }
-        const subjectsOffered_objects = subjectsOffered.map(subject => ({
-            subject: subject.subject || '',
-            topic: subject.topic || ''
-        }));
+        // const subjectsOffered_objects = subjectsOffered.map(subject => ({
+        //     subject: subject || '',
+        //     topic: ''
+        // }));
+        // console.log(subjectsOffered, subjectsOffered_objects);
 
         const hashedPassword = await hashPassword(password);
         const tutor = await Tutor.create({ 
@@ -33,7 +36,7 @@ export const registerTutor = async (req, res) => {
             email, 
             password: hashedPassword, 
             institution, 
-            subjectsOffered_objects, 
+            // subjectsOffered_objects, 
             experience: Number(experience) 
         });
 
@@ -71,7 +74,7 @@ export const getTutorProfile = async (req, res) => {
         // Return the tutor profile
         // tutor.profileImageUrl = `${ENV.API_URL}${tutor.profileImageUrl}`;
         // tutor.cv = `${ENV.API_URL}${tutor.cv}`;
-        console.log("Tutor profile:", tutor);
+        // console.log("Tutor profile:", tutor);
 
         res.status(200).json({
             success: true,
@@ -102,40 +105,79 @@ export const updateTutorProfile = async (req, res) => {
 
         // Handle files if they exist
         if (req.files) {
-            // Handle profile image
-            if (req.files.profileImage) {
-                // Delete old profile image if it exists
-                if (currentTutor.profileImageUrl) {
-                    try {
-                        const oldImagePath = path.join(__dirname, '../..', currentTutor.profileImageUrl);
-                        console.log('Deleting old profile image:', oldImagePath);
-                        if (fs.existsSync(oldImagePath)) {
-                            fs.unlinkSync(oldImagePath);
-                            console.log('Successfully deleted old profile image');
-                        }
-                    } catch (error) {
-                        console.error('Error deleting old profile image:', error);
+            try {
+                // Handle profile image
+                if (req.files.profileImage) {
+                    // Delete old profile image from Cloudinary if it exists
+                    if (currentTutor.profileImageUrl) {
+                        const publicId = currentTutor.profileImageUrl.split('/').pop().split('.')[0];
+                        await cloudinary.uploader.destroy(publicId);
                     }
-                }
-                updateData.profileImageUrl = `/uploads/profiles/${req.files.profileImage[0].filename}`;
-            }
 
-            // Handle CV file
-            if (req.files.cvFile) {
-                // Delete old CV if it exists
-                if (currentTutor.cv) {
-                    try {
-                        const oldCVPath = path.join(__dirname, '../..', currentTutor.cv);
-                        console.log('Deleting old CV:', oldCVPath);
-                        if (fs.existsSync(oldCVPath)) {
-                            fs.unlinkSync(oldCVPath);
-                            console.log('Successfully deleted old CV');
-                        }
-                    } catch (error) {
-                        console.error('Error deleting old CV:', error);
-                    }
+                    // Convert buffer to stream for profile image
+                    const imageStream = Readable.from(req.files.profileImage[0].buffer);
+
+                    // Upload new profile image to Cloudinary
+                    const imageUploadResponse = await new Promise((resolve, reject) => {
+                        const uploadStream = cloudinary.uploader.upload_stream(
+                            {
+                                folder: 'tutor-profiles',
+                                transformation: [
+                                    { width: 500, height: 500, crop: 'fill' },
+                                    { quality: 'auto' }
+                                ]
+                            },
+                            (error, result) => {
+                                if (error) reject(error);
+                                else resolve(result);
+                            }
+                        );
+
+                        imageStream.pipe(uploadStream);
+                    });
+
+                    updateData.profileImageUrl = imageUploadResponse.secure_url;
                 }
-                updateData.cv = `/uploads/cvs/${req.files.cvFile[0].filename}`;
+
+                // Handle CV file
+                if (req.files.cvFile) {
+                    // Delete old CV from Cloudinary if it exists
+                    if (currentTutor.cv) {
+                        const cvPublicId = currentTutor.cv.split('/').pop().split('.')[0];
+                        await cloudinary.uploader.destroy(cvPublicId);
+                    }
+
+                    // Convert buffer to stream for CV
+                    const cvStream = Readable.from(req.files.cvFile[0].buffer);
+
+                    // Upload new CV to Cloudinary
+                    const cvUploadResponse = await new Promise((resolve, reject) => {
+                        const uploadStream = cloudinary.uploader.upload_stream(
+                            {
+                                folder: 'tutor-cvs',
+                                format: 'jpg',
+                                transformation: [
+                                    { quality: 'auto' },
+                                    { flags: 'preserve_transparency' }
+                                ]
+                            },
+                            (error, result) => {
+                                if (error) reject(error);
+                                else resolve(result);
+                            }
+                        );
+
+                        cvStream.pipe(uploadStream);
+                    });
+
+                    updateData.cv = cvUploadResponse.secure_url;
+                }
+            } catch (error) {
+                console.error('Error uploading to Cloudinary:', error);
+                return res.status(500).json({
+                    success: false,
+                    message: "Error uploading files to Cloudinary"
+                });
             }
         }
 
@@ -176,7 +218,7 @@ export const updateTutorProfile = async (req, res) => {
         delete updateData.email;
         delete updateData.role;
 
-        const tutor = await Tutor.findByIdAndUpdate(
+        const updatedTutor = await Tutor.findByIdAndUpdate(
             tutorId,
             { $set: updateData },
             { 
@@ -185,23 +227,23 @@ export const updateTutorProfile = async (req, res) => {
             }
         ).select('-password');
 
-        if (!tutor) {
+        if (!updatedTutor) {
             return res.status(404).json({
                 success: false,
-                message: "Tutor not found"
+                message: "Failed to update tutor profile"
             });
         }
 
         res.status(200).json({
             success: true,
             message: "Profile updated successfully",
-            tutor
+            tutor: updatedTutor
         });
     } catch (error) {
-        console.error("Error in updateTutorProfile:", error);
+        console.error('Error in updateTutorProfile:', error);
         res.status(500).json({
             success: false,
-            message: error.message || "Error updating tutor profile"
+            message: error.message || "Error updating profile"
         });
     }
 };

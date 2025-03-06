@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { SiStudyverse } from "react-icons/si";
 import { IoNotificationsOutline } from "react-icons/io5";
-import { handleLogout } from "../../../handle/common";
+import { logout } from "../../../handle/common";
 import { FiMenu, FiX } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -12,7 +12,7 @@ const StudentNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = async () => {
-    const response = await handleLogout();
+    const response = await logout();
     if (response.success) {
       navigate("/login");
     } else {
@@ -166,7 +166,8 @@ const StudentNavbar = () => {
                   className="bg-[#00BFA5] text-white px-6 py-2 rounded-full hover:bg-[#009e88] transition duration-300 font-semibold"
                   onClick={() => {
                     setIsOpen(false);
-                    navigate("/student-logout");
+                    // navigate("/student-logout");
+                    handleSubmit();
                   }}
                 >
                   Log out
