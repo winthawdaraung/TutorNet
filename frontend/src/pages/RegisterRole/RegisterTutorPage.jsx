@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { FaEnvelope, FaLock, FaChalkboardTeacher, FaUniversity, FaBook, FaClock } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaChalkboardTeacher, FaUniversity, FaClock } from "react-icons/fa";
+// import {FaBook} from "react-icons/fa"; 
 
 const RegisterTutorPage = () => {
   const [formData, setFormData] = useState({
