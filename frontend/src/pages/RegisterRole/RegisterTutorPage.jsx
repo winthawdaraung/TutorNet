@@ -33,26 +33,26 @@ const RegisterTutorPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div className="flex items-center justify-center min-h-screen px-4 bg-gray-100">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md bg-white rounded-lg shadow-lg p-8 border border-gray-200 text-center"
+        className="w-full max-w-md p-8 text-center bg-white border border-gray-200 rounded-lg shadow-lg"
       >
         <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} transition={{ duration: 0.5 }}>
           <h2 className="text-3xl font-bold text-gray-900">
             Become a <span className="text-[#00BFA5]">Tutor</span>
           </h2>
-          <p className="text-gray-500 mt-2">
+          <p className="mt-2 text-gray-500">
             Join our platform and start teaching today!
           </p>
         </motion.div>
 
-        <form className="space-y-5 mt-6" onSubmit={handleSubmit}>
+        <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
           {/* Full Name */}
           <div className="relative">
-            <FaChalkboardTeacher className="absolute left-3 top-4 text-gray-400" />
+            <FaChalkboardTeacher className="absolute text-gray-400 left-3 top-4" />
             <input
               type="text"
               name="fullName"
@@ -66,7 +66,7 @@ const RegisterTutorPage = () => {
 
           {/* Email */}
           <div className="relative">
-            <FaEnvelope className="absolute left-3 top-4 text-gray-400" />
+            <FaEnvelope className="absolute text-gray-400 left-3 top-4" />
             <input
               type="email"
               name="email"
@@ -80,7 +80,7 @@ const RegisterTutorPage = () => {
 
           {/* Password */}
           <div className="relative">
-            <FaLock className="absolute left-3 top-4 text-gray-400" />
+            <FaLock className="absolute text-gray-400 left-3 top-4" />
             <input
               type="password"
               name="password"
@@ -94,7 +94,7 @@ const RegisterTutorPage = () => {
 
           {/* University */}
           <div className="relative">
-            <FaUniversity className="absolute left-3 top-4 text-gray-400" />
+            <FaUniversity className="absolute text-gray-400 left-3 top-4" />
             <input
               type="text"
               name="university"
@@ -106,9 +106,9 @@ const RegisterTutorPage = () => {
             />
           </div>
 
-          {/* Subject - New Field ✅ */}
+          {/* Subject - New Field ✅
           <div className="relative">
-            <FaBook className="absolute left-3 top-4 text-gray-400" />
+            <FaBook className="absolute text-gray-400 left-3 top-4" />
             <input
               type="text"
               name="subject"
@@ -118,11 +118,11 @@ const RegisterTutorPage = () => {
               onChange={handleChange}
               required
             />
-          </div>
+          </div> */}
 
           {/* Experience - New Field ✅ */}
           <div className="relative">
-            <FaClock className="absolute left-3 top-4 text-gray-400" />
+            <FaClock className="absolute text-gray-400 left-3 top-4" />
             <input
               type="number"
               name="experience"
@@ -144,7 +144,7 @@ const RegisterTutorPage = () => {
               checked={acceptTerms}
               onChange={() => setAcceptTerms(!acceptTerms)}
             />
-            <label htmlFor="terms" className="text-gray-600 text-sm">
+            <label htmlFor="terms" className="text-sm text-gray-600">
               I agree to the{" "}
               <span
                 className="text-[#00BFA5] cursor-pointer hover:underline"
@@ -170,7 +170,7 @@ const RegisterTutorPage = () => {
         </form>
 
         {/* Back to Role Selection */}
-        <div className="text-center mt-6 flex justify-center">
+        <div className="flex justify-center mt-6 text-center">
           <button
             className="text-[#00BFA5] font-semibold hover:underline flex items-center"
             onClick={() => navigate("/register")}
