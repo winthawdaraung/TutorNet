@@ -15,7 +15,7 @@ const RegisterTutorPage = () => {
   });
 
   const [acceptTerms, setAcceptTerms] = useState(false);
-  const [setShowTerms] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
   const [setShowAlert] = useState(false);
   const navigate = useNavigate();
 
@@ -180,6 +180,35 @@ const RegisterTutorPage = () => {
           </button>
         </div>
       </motion.div>
+            {/* ✅ Modal Terms & Conditions */}
+            {showTerms && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="p-6 bg-white border border-gray-300 rounded-lg shadow-lg w-96"
+          >
+            {/* Header */}
+            <h2 className="mb-4 text-xl font-bold text-center text-gray-900">Terms & Conditions</h2>
+
+            {/*Terms & Conditions */}
+            <div className="space-y-3 text-left text-gray-700">
+              <p><span className="font-bold text-[#00BFA5]">Platform Use:</span> This platform connects students and tutors but does not verify tutor qualifications.</p>
+              <p><span className="font-bold text-[#00BFA5]">Payments:</span> All transactions are managed directly between students and tutors. We are not responsible for any payment issues, refunds, or disputes.</p>
+              <p><span className="font-bold text-[#00BFA5]">User Conduct:</span> Users must interact professionally and respectfully. Any inappropriate behavior may result in account suspension.</p>
+              <p><span className="font-bold text-[#00BFA5]">Privacy:</span> We collect only essential information for account creation and matching purposes. No financial data is stored or processed.</p>
+            </div>
+
+            {/* Close button */}
+            <div className="flex justify-between mt-6">
+              <button onClick={() => setShowTerms(false)} className="px-4 py-2 font-semibold text-gray-600 hover:text-gray-900">Close</button>
+              <button onClick={() => { setAcceptTerms(true); setShowTerms(false); }} className="px-4 py-2 bg-[#00BFA5] text-white font-semibold rounded-full hover:bg-teal-600 transition duration-300">Accept & Close</button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };
