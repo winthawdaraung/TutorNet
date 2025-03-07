@@ -120,9 +120,11 @@ export const forgotPassword = async (req, res) => {
         });
     } catch (error) {
         console.error('Error in forgotPassword:', error);
+        console.log('forgotPassword error:', error);
         res.status(500).json({
             success: false,
-            message: "Error sending password reset email"
+            // message: "Error sending password reset email"
+            message: error.message
         });
     }
 };

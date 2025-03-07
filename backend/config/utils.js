@@ -33,7 +33,9 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD
-  }
+  },
+  debug: true,
+  logger: true
 });
 
 export const generateResetToken = () => {
@@ -61,6 +63,7 @@ export const sendPasswordResetEmail = async (email, resetToken) => {
         await transporter.sendMail(mailOptions);
         return true;
     } catch (error) {
+        console.log('sendPasswordResetEmail error:', error);
         console.error('Error sending password reset email:', error);
         throw error;
     }

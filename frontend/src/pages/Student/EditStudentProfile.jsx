@@ -20,6 +20,8 @@ function EditStudentProfile() {
   const [formData, setFormData] = useState(userProfileDataMock);
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewImage, setPreviewImage] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const fetchProfile = async () => {
     try {
@@ -58,6 +60,7 @@ function EditStudentProfile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     const formDataToSend = new FormData();
     
     // Add text fields
@@ -74,14 +77,18 @@ function EditStudentProfile() {
     try {
         const response = await updateStudentProfile(formDataToSend);
         if (response.success) {
-            navigate("/student-profile");
+            setTimeout(() => {
+                navigate("/student-profile");
+            }, 500);
         } else {
             console.error("Failed to update profile:", response.error);
-            alert(response.error); // Show error to user
+            alert(response.error);
         }
     } catch (error) {
         console.error("Error updating profile:", error);
-        alert(error.message); // Show error to user
+        alert(error.message);
+    } finally {
+        setIsLoading(false);
     }
   };
 
@@ -185,14 +192,27 @@ function EditStudentProfile() {
                   />
                 </motion.div>
               ))}
-              <div className="col-span-1 md:col-span-2 flex justify-center">
+              <div className="col-span-1 md:col-span-2 flex flex-col items-center space-y-4">
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: isLoading ? 1 : 1.05 }}
+                  whileTap={{ scale: isLoading ? 1 : 0.95 }}
                   type="submit"
-                  className="bg-yellow-500 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-yellow-600"
+                  disabled={isLoading}
+                  className={`bg-yellow-500 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-yellow-600 flex items-center space-x-2 ${
+                    isLoading ? 'opacity-75 cursor-not-allowed' : ''
+                  }`}
                 >
-                  Save Profile
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <span>Save Profile</span>
+                  )}
                 </motion.button>
               </div>
             </form>

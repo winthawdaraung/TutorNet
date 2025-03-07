@@ -31,7 +31,7 @@ export const forgotPassword = async (email) => {
 
 export const resetPassword = async (token, newPassword) => {
     try {
-        const response = await fetch('/api/users/reset-password', {
+        const response = await fetch('/api/users/reset-password/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
