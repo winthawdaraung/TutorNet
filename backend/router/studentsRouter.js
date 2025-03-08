@@ -2,7 +2,6 @@ import express from "express";
 import { registerStudent, sendRequest, getStudentProfile, updateStudentProfile, getTutorProfile } from "../controllers/studentsController.js";
 import { protect } from '../middleware/authMiddleware.js';
 import { upload } from '../middleware/uploadMiddleware.js';
-import { getTutorsBySubject } from "../controllers/tutorsController.js";
 
 const studentsRouter = express.Router();
 
@@ -15,7 +14,7 @@ studentsRouter.put('/profile', protect,
     updateStudentProfile
 );
 studentsRouter.post('/send-request', protect, sendRequest);
-studentsRouter.get('/search-tutors', protect, getTutorsBySubject);
+
 studentsRouter.get('/tutor-profile/:id', protect, getTutorProfile);
 
 export default studentsRouter;
