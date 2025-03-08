@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -31,13 +32,24 @@ const iconVariants = {
 
 const StudentSearchPage = () => {
   const [subject, setSubject] = useState("");
+  const [sortByRating, setSortByRating] =useState(false);
+  const [results, setResults] = useState([]);
   const navigate = useNavigate();
 
-  const handleSearch = () => {
-    if (subject.trim()) {
-      navigate(`/student-search-results?query=${subject}`);
-    }
-  };
+  const handleSearch = async () => {
+   
+    try {
+      const response = await axios.get("http://localhost:5000/api/tutors/search", {
+          params: { subject/*, sortByRating */}
+      });
+      setResults(response.data);
+      if (subject.trim()) {
+        navigate(`/student-search-results?query=${subject}`);
+      }
+  } catch (error) {
+      console.error("Error fetching tutors:", error);
+  }
+};
 
   return (
     <motion.div className="min-h-screen flex flex-col bg-white">
