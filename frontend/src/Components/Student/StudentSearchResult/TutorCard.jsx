@@ -1,10 +1,17 @@
 import PropTypes from "prop-types";
 import { motion } from "framer-motion";
-import { FaUniversity, FaBriefcase } from "react-icons/fa";
+import { FaUniversity, FaBriefcase, FaStar, FaBook } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import defaultProfile from "../../../assets/tutor/defaultProfile.png";
 
 const TutorCard = ({ tutor }) => {
   const navigate = useNavigate();
+
+  // Get the first 3 subjects to display
+  const displaySubjects = tutor.subjectsOffered
+    ?.slice(0, 3)
+    .map(s => s.subject)
+    .join(", ");
 
   return (
     <motion.div
@@ -14,26 +21,46 @@ const TutorCard = ({ tutor }) => {
         visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 120, damping: 15 } }
       }}
     >
-      {/* ✅ Profile Image - Ensuring Rounded & Shadow Consistency */}
+      {/* Profile Image */}
       <img 
-        src={tutor.image} 
-        alt={tutor.name} 
+        src={tutor.profileImageUrl || defaultProfile} 
+        alt={tutor.fullName} 
         className="w-20 h-20 rounded-xl object-cover border border-gray-200 shadow-sm mr-6"
+        onError={(e) => {
+          e.target.onerror = null; // Prevent infinite loop
+          e.target.src = defaultProfile;
+        }}
       />
 
       <div className="flex-grow">
-        <h3 className="text-xl font-semibold text-gray-900">{tutor.name}</h3>
-        <p className="text-gray-600">{tutor.subject}</p>
-        <p className="text-gray-500 text-sm flex items-center gap-2">
-          <FaUniversity className="text-gray-500" /> {tutor.university}
+        <h3 className="text-xl font-semibold text-gray-900">{tutor.fullName}</h3>
+        
+        {/* Subjects */}
+        <p className="text-gray-600 flex items-center gap-2">
+          <FaBook className="text-gray-500" />
+          {displaySubjects || "No subjects listed"}
+          {tutor.subjectsOffered?.length > 3 && ` +${tutor.subjectsOffered.length - 3} more`}
         </p>
+
+        {/* Institution */}
         <p className="text-gray-500 text-sm flex items-center gap-2">
-          <FaBriefcase className="text-gray-500" /> Experience: {tutor.experience}
+          <FaUniversity className="text-gray-500" /> {tutor.institution || "Institution not specified"}
         </p>
-        <p className="text-teal-500 font-semibold text-lg">฿{tutor.price} / hour</p>
+
+        {/* Experience */}
+        <p className="text-gray-500 text-sm flex items-center gap-2">
+          <FaBriefcase className="text-gray-500" /> 
+          Experience: {tutor.experience ? `${tutor.experience} years` : "Not specified"}
+        </p>
+
+        {/* Rating */}
+        <p className="text-yellow-500 flex items-center gap-1 mt-1">
+          <FaStar />
+          <span className="font-semibold">{tutor.rating?.toFixed(1) || "New"}</span>
+        </p>
       </div>
 
-      {/* ✅ Updated Button for Theme Consistency */}
+      {/* View Profile Button */}
       <motion.button 
         whileHover={{ scale: 1.05 }} 
         whileTap={{ scale: 0.95 }} 
@@ -47,16 +74,22 @@ const TutorCard = ({ tutor }) => {
   );
 };
 
-// ✅ PropTypes Validation
+// Updated PropTypes to match backend data structure
 TutorCard.propTypes = {
   tutor: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    subject: PropTypes.string.isRequired,
-    university: PropTypes.string.isRequired,
-    experience: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
-    image: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
+    fullName: PropTypes.string.isRequired,
+    institution: PropTypes.string,
+    profileImageUrl: PropTypes.string,
+    subjectsOffered: PropTypes.arrayOf(
+      PropTypes.shape({
+        subject: PropTypes.string,
+        topic: PropTypes.string
+      })
+    ),
+    experience: PropTypes.number,
+    rating: PropTypes.number,
+    availability: PropTypes.array
   }).isRequired,
 };
 

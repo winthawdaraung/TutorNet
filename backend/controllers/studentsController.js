@@ -188,3 +188,54 @@ export const sendRequest = async (req, res) => {
     }
 }
 
+export const getTutorProfile = async (req, res) => {
+    try {
+        const tutorId = req.params.id;
+        console.log('Fetching tutor profile for ID:', tutorId);
+        
+        const tutor = await Tutor.findById(tutorId)
+            .select('-password -resetPasswordToken -resetPasswordExpires')
+            .lean();
+
+        if (!tutor) {
+            return res.status(404).json({
+                success: false,
+                message: "Tutor not found"
+            });
+        }
+
+        // Format the response
+        const formattedTutor = {
+            id: tutor._id,
+            fullName: tutor.fullName,
+            email: tutor.email,
+            institution: tutor.institution,
+            profileImageUrl: tutor.profileImageUrl,
+            qualification: tutor.qualification || '',
+            experience: tutor.experience || 0,
+            aboutMe: tutor.aboutMe || '',
+            aboutMySession: tutor.aboutMySession || '',
+            cvDownload: tutor.cv || '',
+            rating: tutor.rating || 0,
+            reviewsCount: tutor.reviews?.length || 0,
+            availability: tutor.availability || {},
+            subjectsOffered: tutor.subjectsOffered || [],
+            reviews: tutor.reviews || [],
+            contactEmail: tutor.contactEmail || tutor.email,
+            contactNumber: tutor.contactNumber || ''
+        };
+
+        console.log('Sending formatted tutor data:', formattedTutor);
+
+        res.status(200).json({
+            success: true,
+            tutor: formattedTutor
+        });
+    } catch (error) {
+        console.error("Error in getTutorProfile:", error);
+        res.status(500).json({
+            success: false,
+            message: "Error fetching tutor profile"
+        });
+    }
+};

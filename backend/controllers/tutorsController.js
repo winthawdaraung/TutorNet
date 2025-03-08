@@ -1,14 +1,9 @@
 import Tutor from "../models/tutorsModel.js";
 import Student from "../models/studentsModel.js";
 import { hashPassword } from "../config/utils.js";
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import cloudinary from "../config/cloudinary.js";
 import { Readable } from 'stream';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export const registerTutor = async (req, res) => {
     try {
@@ -24,11 +19,7 @@ export const registerTutor = async (req, res) => {
                 message: "User with this email already exists!" 
             });
         }
-        // const subjectsOffered_objects = subjectsOffered.map(subject => ({
-        //     subject: subject || '',
-        //     topic: ''
-        // }));
-        // console.log(subjectsOffered, subjectsOffered_objects);
+
 
         const hashedPassword = await hashPassword(password);
         const tutor = await Tutor.create({ 
@@ -61,20 +52,19 @@ export const registerTutor = async (req, res) => {
 
 export const getTutorProfile = async (req, res) => {
     try {
-        const tutorId = req.user.id;
+        const tutorId = req.user.id ;
+        console.log("UserID", tutorId);
         const tutor = await Tutor.findById(tutorId).select('-password');
         
+        await Tutor.findById(tutorId).select('-password');
+
         if (!tutor) {
             return res.status(404).json({
                 success: false,
                 message: "Tutor not found"
             });
         }
-
-        // Return the tutor profile
-        // tutor.profileImageUrl = `${ENV.API_URL}${tutor.profileImageUrl}`;
-        // tutor.cv = `${ENV.API_URL}${tutor.cv}`;
-        // console.log("Tutor profile:", tutor);
+        
 
         res.status(200).json({
             success: true,

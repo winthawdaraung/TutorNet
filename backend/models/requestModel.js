@@ -1,13 +1,12 @@
 import mongoose from "mongoose";
 
-const bookingSchema = new mongoose.Schema({
+const requestSchema = new mongoose.Schema({
     studentId: { type: String, required: true, trim: true },
     tutorId: { type: String, required: true, trim: true },
-    bookingDate: { type: Date, required: true },
-    bookingTime: { type: String, required: true },
-    bookingDuration: { type: Number, required: true },
+    requestDate: { type: Date, required: true },
+    requestTime: { type: String, required: true },
     subject: { type: String, required: true, trim: true },
-    comment: { type: String, trim: true },
+    message: { type: String, trim: true },
     status: { type: String, default: 'pending' }, // pending, confirmed, completed, canceled
 }
     , 
@@ -15,5 +14,5 @@ const bookingSchema = new mongoose.Schema({
         timestamps: true
     });
 
-const Booking = mongoose.model('Booking', bookingSchema);
+const Booking = mongoose.model('Booking', requestSchema);
 export default Booking;

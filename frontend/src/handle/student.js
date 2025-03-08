@@ -112,3 +112,36 @@ export const updateStudentProfile = async (formData) => {
         };
     }
 }
+
+export const getTutorProfile = async (id) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/students/tutor-profile/${id}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            credentials: 'include'
+        }); 
+
+        const data = await response.json();
+        console.log('Tutor profile response:', data);
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to fetch tutor profile');
+        }
+
+        return { 
+            success: true, 
+            tutor: data.tutor
+        };
+    }
+    catch (error) {
+        console.error('Error fetching tutor profile:', error);
+        return { 
+            success: false, 
+            error: error.message || 'Failed to fetch tutor profile'
+        };
+    }
+}

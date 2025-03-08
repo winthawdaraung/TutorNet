@@ -1,28 +1,70 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import StudentNavbar from "../../Components/Student/StudentNavbar/StudentNavbar";
 import Footer from "../../Components/homeComponents/footer/Footer";
 import { FaSearch } from "react-icons/fa";
-import tutors from "../../mockData/Student/ResultTutors"; 
+// import tutors from "../../mockData/Student/ResultTutors"; 
 import TutorCard from "../../Components/Student/StudentSearchResult/TutorCard";
 import Pagination from "../../Components/Student/StudentSearchResult/Pagination";
+import { searchTutors } from "../../handle/student";
 
-const tutorsPerPage = 3; // ✅ Number of tutors per page
+const tutorsPerPage = 3;
 
 const StudentSearchResultPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [tutors, setTutors] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const performSearch = async (query) => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const result = await searchTutors(query);
+      if (result.success) {
+        setTutors(result.tutors);
+      } else {
+        setError(result.error);
+        setTutors([]);
+      }
+    } catch (error) {
+      console.error('Search failed:', error);
+      setError("Failed to search tutors. Please try again.");
+      setTutors([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
     const params = new URLSearchParams(location.search);
     const query = params.get("query") || "";
     setSearchQuery(query);
+    if (query) {
+      performSearch(query);
+    }
   }, [location.search]);
 
-  // ✅ Pagination Logic
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      navigate(`/student-search-results?query=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  console.log(tutors);
+
+  // Pagination Logic
   const indexOfLastTutor = currentPage * tutorsPerPage;
   const indexOfFirstTutor = indexOfLastTutor - tutorsPerPage;
   const currentTutors = tutors.slice(indexOfFirstTutor, indexOfLastTutor);
@@ -53,29 +95,60 @@ const StudentSearchResultPage = () => {
               <input 
                 type="text" 
                 value={searchQuery} 
-                onChange={(e) => setSearchQuery(e.target.value)} 
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={handleKeyPress}
                 placeholder="Search a subject" 
                 className="w-full pl-5 pr-12 py-3 border rounded-l-full focus:ring-2 focus:ring-[#00BFA5] bg-gray-100 text-gray-700 text-lg"
               />
-              <button className="px-5 bg-[#00BFA5] text-white text-lg rounded-r-full shadow-md hover:bg-[#009e88] transition">
-                <FaSearch />
+              <button 
+                onClick={handleSearch}
+                disabled={isLoading}
+                className={`px-5 bg-[#00BFA5] text-white text-lg rounded-r-full shadow-md hover:bg-[#009e88] transition ${
+                  isLoading ? 'opacity-75 cursor-not-allowed' : ''
+                }`}
+              >
+                {isLoading ? (
+                  <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
+                ) : (
+                  <FaSearch />
+                )}
               </button>
             </div>
           </div>
 
-          {/* Tutor List */}
-          <div className="space-y-6 flex-grow">
-            {currentTutors.length > 0 ? (
-              currentTutors.map((tutor) => <TutorCard key={tutor.id} tutor={tutor} />)
-            ) : (
-              <p className="text-center text-gray-500 text-lg">No tutors found.</p>
-            )}
-          </div>
+          {/* Error Message */}
+          {error && (
+            <div className="text-red-500 text-center mb-6">
+              {error}
+            </div>
+          )}
 
-          {/* ✅ Pagination (Always at the Bottom) */}
-          <div className="mt-auto flex justify-center pt-10">
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
-          </div>
+          {/* Loading State */}
+          {isLoading ? (
+            <div className="flex-grow flex items-center justify-center">
+              <div className="animate-spin h-12 w-12 border-4 border-[#00BFA5] border-t-transparent rounded-full" />
+            </div>
+          ) : (
+            <>
+              {/* Tutor List */}
+              <div className="space-y-6 flex-grow">
+                {currentTutors.length > 0 ? (
+                  currentTutors.map((tutor) => <TutorCard key={tutor.id} tutor={tutor} />)
+                ) : (
+                  <p className="text-center text-gray-500 text-lg">
+                    {searchQuery ? 'No tutors found for your search.' : 'Start searching for tutors!'}
+                  </p>
+                )}
+              </div>
+
+              {/* Pagination */}
+              {currentTutors.length > 0 && (
+                <div className="mt-auto flex justify-center pt-10">
+                  <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+                </div>
+              )}
+            </>
+          )}
         </motion.div>
       </div>
 
