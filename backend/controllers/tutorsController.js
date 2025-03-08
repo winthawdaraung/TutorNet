@@ -238,4 +238,143 @@ export const updateTutorProfile = async (req, res) => {
     }
 };
 
+//Search Tutor now using Tutor Name!
+
+// export const searchTutors = async (req, res) => {
+//     try {
+//         const { subject, sortByRating } = req.query;
+//         let query = {};
+
+//         if (subject) {
+//             query.subjects = { $regex: new RegExp(subject, "i") }; // Case-insensitive search
+//         }
+
+//         let tutors = await Tutor.find(query);
+
+//         /*if (sortByRating === "true") {
+//             tutors = tutors.sort((a, b) => b.rating - a.rating);
+//         }*/
+
+//         res.json(tutors);
+//     } catch (error) {
+//         res.status(500).json({ message: "Server Error", error });
+//     }
+// };
+
+export const searchTutors = async (req, res) => {
+    try {
+        const { query, subject, sortByRating, price, experience } = req.query;
+        let searchQuery = {};
+
+        // Basic search by query text (will search in name or subject)
+        if (query) {
+            searchQuery.$or = [
+                { fullName: { $regex: new RegExp(query, "i") } },
+                { "subjectsOffered.subject": { $regex: new RegExp(query, "i") } }
+            ];
+        }
+
+        // Filter by specific subject
+        if (subject) {
+            searchQuery["subjectsOffered.subject"] = { $regex: new RegExp(subject, "i") };
+        }
+
+        // Filter by price range if provided
+        if (price) {
+            const [min, max] = price.split('-').map(Number);
+            if (!isNaN(min) && !isNaN(max)) {
+                searchQuery.priceRate = { $gte: min, $lte: max };
+            } else if (!isNaN(min)) {
+                searchQuery.priceRate = { $gte: min };
+            }
+        }
+
+        // Filter by experience
+        if (experience) {
+            searchQuery.experience = { $gte: parseInt(experience) };
+        }
+
+        // Execute the query
+        let tutors = await Tutor.find(searchQuery)
+            .select('fullName subjectsOffered institution experience priceRate rating reviewsCount profileImageUrl');
+
+        // Sort by rating if requested
+        if (sortByRating === "true") {
+            tutors = tutors.sort((a, b) => b.rating - a.rating);
+        }
+
+        // Transform the data to match the frontend expectations
+        const formattedTutors = tutors.map(tutor => ({
+            id: tutor._id,
+            name: tutor.fullName,
+            subject: tutor.subjectsOffered.length > 0 
+                ? tutor.subjectsOffered.map(s => s.subject).join(', ') 
+                : 'No subjects listed',
+            university: tutor.institution || 'Not specified',
+            experience: tutor.experience ? `${tutor.experience} years` : 'Not specified',
+            price: tutor.priceRate || 0,
+            image: tutor.profileImageUrl || 'https://via.placeholder.com/150',
+            rating: tutor.rating || 0,
+            reviewsCount: tutor.reviewsCount || 0
+        }));
+
+        res.status(200).json(formattedTutors);
+    } catch (error) {
+        console.error("Error in searchTutors:", error);
+        res.status(500).json({ 
+            message: "Server Error", 
+            error: error.message 
+        });
+    }
+};
+
+export const getTutorDetails = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const tutor = await Tutor.findById(id)
+            .select('-password -resetPasswordToken -resetPasswordExpires')
+            .populate('reviews');
+
+        if (!tutor) {
+            return res.status(404).json({
+                success: false,
+                message: "Tutor not found"
+            });
+        }
+
+        // Format the tutor data for the frontend
+        const formattedTutor = {
+            id: tutor._id,
+            name: tutor.fullName,
+            subjects: tutor.subjectsOffered || [],
+            university: tutor.institution,
+            experience: tutor.experience,
+            price: tutor.priceRate || 0,
+            image: tutor.profileImageUrl || 'https://via.placeholder.com/150',
+            rating: tutor.rating || 0,
+            reviewsCount: tutor.reviewsCount || 0,
+            aboutMe: tutor.aboutMe || '',
+            aboutMySession: tutor.aboutMySession || '',
+            qualification: tutor.qualification || '',
+            availability: tutor.availability || {},
+            reviews: tutor.reviews || [],
+            contactEmail: tutor.contactEmail || tutor.email || '',
+            contactNumber: tutor.contactNumber || ''
+        };
+
+        res.status(200).json({
+            success: true,
+            tutor: formattedTutor
+        });
+    } catch (error) {
+        console.error("Error in getTutorDetails:", error);
+        res.status(500).json({
+            success: false,
+            message: "Error fetching tutor details",
+            error: error.message
+        });
+    }
+};
+
 

@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import axios from "axios";
 import { motion } from "framer-motion";
 import StudentNavbar from "../../Components/Student/StudentNavbar/StudentNavbar";
 import Footer from "../../Components/homeComponents/footer/Footer";
 import { FaSearch } from "react-icons/fa";
-import tutors from "../../mockData/Student/ResultTutors"; 
+//import tutors from "../../mockData/Student/ResultTutors"; 
+//import StudentSearchPage from "./StudentSearchPage";
 import TutorCard from "../../Components/Student/StudentSearchResult/TutorCard";
 import Pagination from "../../Components/Student/StudentSearchResult/Pagination";
 
 const tutorsPerPage = 3; // ✅ Number of tutors per page
 
 const StudentSearchResultPage = () => {
+  const [results, setResults] = useState([]);
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -20,13 +23,31 @@ const StudentSearchResultPage = () => {
     const params = new URLSearchParams(location.search);
     const query = params.get("query") || "";
     setSearchQuery(query);
-  }, [location.search]);
+
+    if (query) {
+      fetchTutors(query);
+    }
+  },[location.search]);
+
+  // //Search for tutors
+  const fetchTutors = async (query) => {
+    try{
+      const response = await axios.get('http://localhost:5000/api/tutors/search', {
+      params: {query}
+    });
+    setResults(response.data);
+  }catch (error) {
+      console.error("Error fetching tutors:", error);
+      setResults([]);
+    }
+  };
+
 
   // ✅ Pagination Logic
   const indexOfLastTutor = currentPage * tutorsPerPage;
   const indexOfFirstTutor = indexOfLastTutor - tutorsPerPage;
-  const currentTutors = tutors.slice(indexOfFirstTutor, indexOfLastTutor);
-  const totalPages = Math.ceil(tutors.length / tutorsPerPage);
+  const currentTutors = results.slice(indexOfFirstTutor, indexOfLastTutor);
+  const totalPages = Math.ceil(results.length / tutorsPerPage);
 
   return (
     <motion.div 
@@ -65,8 +86,8 @@ const StudentSearchResultPage = () => {
 
           {/* Tutor List */}
           <div className="space-y-6 flex-grow">
-            {currentTutors.length > 0 ? (
-              currentTutors.map((tutor) => <TutorCard key={tutor.id} tutor={tutor} />)
+            {results.length > 0 ? (
+              results.map((tutor) => <TutorCard key={tutor.id} tutor={tutor} />)
             ) : (
               <p className="text-center text-gray-500 text-lg">No tutors found.</p>
             )}

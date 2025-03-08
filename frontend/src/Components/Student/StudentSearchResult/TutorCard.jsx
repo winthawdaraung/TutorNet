@@ -4,6 +4,7 @@ import { FaUniversity, FaBriefcase } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const TutorCard = ({ tutor }) => {
+  console.log(tutor);
   const navigate = useNavigate();
 
   return (
@@ -39,7 +40,7 @@ const TutorCard = ({ tutor }) => {
         whileTap={{ scale: 0.95 }} 
         className="border border-teal-500 text-teal-500 px-5 py-2.5 text-md font-medium 
         rounded-xl transition-all duration-300 hover:bg-teal-500 hover:text-white" 
-        onClick={() => navigate(`/tutor-profile/${tutor.id}`)}
+        onClick={() => tutor.id && navigate(`/tutor-profile/${tutor.id}`)}
       >
         View Profile
       </motion.button>

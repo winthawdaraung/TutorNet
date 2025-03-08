@@ -1,5 +1,5 @@
 import express from "express";
-import { registerTutor, getTutorProfile, updateTutorProfile } from "../controllers/tutorsController.js";
+import { registerTutor, getTutorProfile, updateTutorProfile,searchTutors, getTutorDetails } from "../controllers/tutorsController.js";
 import { protect } from '../middleware/authMiddleware.js';
 import { upload } from '../middleware/uploadMiddleware.js';
 
@@ -14,5 +14,11 @@ tutorsRouter.put('/profile', protect,
     ]), 
     updateTutorProfile
 );
+
+//Search
+tutorsRouter.get('/search',searchTutors)
+
+//GetID
+tutorsRouter.get('/:id', getTutorDetails);
 
 export default tutorsRouter;
