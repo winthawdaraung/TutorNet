@@ -1,11 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TutorstudentreqData from "../../mockData/TutorstudentreqData";
+import { getTutorProfile } from "../../handle/tutor";
 
 const TutorNotification = () => {
+  
+  const [tutorProfileData, setTutorProfileData] = useState(null);
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await getTutorProfile();
+        if (response.success) {
+          setTutorProfileData(response.data);
+        } else {
+          console.error("Failed to fetch tutor profile:", response.error);
+          setTutorProfileData(null);
+        }
+      } catch (error) {
+        console.error("Error fetching tutor profile:", error);
+        setTutorProfileData(null);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
   const [requests, setRequests] = useState(TutorstudentreqData);
+  const [isLoading, setIsLoading] = useState(false);
+
+
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [reply, setReply] = useState("");
   const [studyLink, setStudyLink] = useState("");
+
+  useEffect(() => {
+    setRequests(tutorProfileData?.requests || []);
+  }, [tutorProfileData]);
 
   const handleAcceptClick = (request) => {
     setSelectedRequest(request);

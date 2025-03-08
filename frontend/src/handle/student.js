@@ -145,3 +145,35 @@ export const getTutorProfile = async (id) => {
         };
     }
 }
+
+export const createRequest = async (formData) => {
+    try {
+        const response = await fetch('/api/students/create-request', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(formData)
+        });
+
+        console.log(localStorage.getItem('token'));
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to create request');
+        }
+
+        return {
+            success: true,
+            message: data.message
+        };
+    } catch (error) {
+        console.error('Error creating request:', error);
+        return {
+            success: false,
+            error: error.message || 'Failed to create request'
+        };
+    }
+};

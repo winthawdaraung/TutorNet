@@ -135,3 +135,32 @@ export const getCurrentUser = () => {
     const userData = localStorage.getItem('user');
     return userData ? JSON.parse(userData) : null;
 };
+
+export const getRequestData = async () => {
+    try {
+        const response = await fetch('/api/students/get-requests', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to get requests');
+        }
+
+        return {
+            success: true,
+            requests: data.requests
+        };
+    } catch (error) {
+        console.error('Error in getRequestData:', error);
+        return {
+            success: false,
+            error: error.message || 'Failed to get requests'
+        };
+    }
+};

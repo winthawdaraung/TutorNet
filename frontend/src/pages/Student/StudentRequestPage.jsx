@@ -6,7 +6,7 @@ import Footer from "../../Components/homeComponents/footer/Footer";
 // import studentProfileData from "../../mockData/Student/StudentProfileData";
 import ThemedButton from "../../Components/Student/StudentRequest/ThemedButton";
 import CustomDropdown from "../../Components/Student/StudentRequest/CustomDropdown";
-import { getTutorProfile } from "../../handle/student";
+import { getTutorProfile, createRequest } from "../../handle/student";
 import { useParams } from "react-router-dom";
 
 const StudentRequestPage = () => {
@@ -52,21 +52,29 @@ const StudentRequestPage = () => {
       fetchTutorData();
   }, [id]);
 
-  console.log("Tutor Data", tutorData.fullName);
+  console.log("Tutor Data", tutorData);
+
+  
 
   const [formData, setFormData] = useState({
+      tutorId: id,
       tutorName: "",
       subject: "",
       message: "",
-      time: "",
+      startDate: "",
+      fromTime: "",
+      toTime: ""
   });
 
   useEffect(() => {
       setFormData({
+          tutorId: tutorData.id,
           tutorName: tutorData.fullName,
           subject: tutorData.subjectsOffered.length ? tutorData.subjectsOffered[0].subject : "",
           message: "",
-          time: "",
+          startDate: "",
+          fromTime: "",
+          toTime: ""
       });
   }, [tutorData]);
 
@@ -81,16 +89,18 @@ const StudentRequestPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.subject || !formData.message || !formData.time) {
+    if (!formData.subject || !formData.message || !formData.startDate || !formData.fromTime || !formData.toTime) {
       alert("⚠️ Please fill in all fields.");
       return;
     }
     console.log("✅ Request Sent:", formData);
+    createRequest(formData);
+    alert("Request Sent!");
     setIsSubmitting(true);
 
     setTimeout(() => {
       navigate(`/tutor-profile/${id}`, { replace: true });
-    }, 1500);
+    }, 1000);
   };
 
   return (
@@ -160,15 +170,47 @@ const StudentRequestPage = () => {
 
             {/* Preferred Time */}
             <div>
-              <label className="text-gray-700 font-medium">Preferred Time</label>
-              <input 
-                type="datetime-local" 
-                name="time"
-                value={formData.time} 
-                onChange={handleChange}
-                className="w-full px-4 py-3 border rounded-lg bg-gray-100 text-gray-700 focus:ring-2 focus:ring-[#00BFA5]"
-                required
-              />
+              <label className="text-gray-700 font-medium block mb-2">Appointment Period</label>
+              <div className="flex flex-wrap gap-2 items-center">
+                {/* Start Date */}
+                <div className="flex-1 min-w-[150px]">
+                  <label className="text-gray-600 text-sm block mb-1">Date</label>
+                  <input 
+                    type="date" 
+                    name="startDate"
+                    value={formData.startDate} 
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100 text-gray-700 focus:ring-2 focus:ring-[#00BFA5]"
+                    required
+                  />
+                </div>
+                
+                {/* From Time */}
+                <div className="flex-1 min-w-[120px]">
+                  <label className="text-gray-600 text-sm block mb-1">From</label>
+                  <input 
+                    type="time" 
+                    name="fromTime"
+                    value={formData.fromTime} 
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100 text-gray-700 focus:ring-2 focus:ring-[#00BFA5]"
+                    required
+                  />
+                </div>
+                
+                {/* To Time */}
+                <div className="flex-1 min-w-[120px]">
+                  <label className="text-gray-600 text-sm block mb-1">To</label>
+                  <input 
+                    type="time" 
+                    name="toTime"
+                    value={formData.toTime} 
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100 text-gray-700 focus:ring-2 focus:ring-[#00BFA5]"
+                    required
+                  />
+                </div>
+              </div>
             </div>
 
             {/* ✅ Submit Button Component */}
