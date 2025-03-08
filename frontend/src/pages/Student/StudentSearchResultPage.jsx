@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
 import StudentNavbar from "../../Components/Student/StudentNavbar/StudentNavbar";
@@ -15,8 +15,10 @@ const tutorsPerPage = 3; // ✅ Number of tutors per page
 const StudentSearchResultPage = () => {
   const [results, setResults] = useState([]);
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -25,29 +27,44 @@ const StudentSearchResultPage = () => {
     setSearchQuery(query);
 
     if (query) {
-      fetchTutors(query);
+      fetchTutors(query, 1);
     }
   },[location.search]);
 
   // //Search for tutors
-  const fetchTutors = async (query) => {
+  const fetchTutors = async (query, page = 1) => {
+    console.log("Fetching tutors for:", query, "Page:", page);
     try{
       const response = await axios.get('http://localhost:5000/api/tutors/search', {
-      params: {query}
+      params: {query, page, limit: tutorsPerPage},
     });
-    setResults(response.data);
+
+    setResults(response.data.tutors);
+    setTotalPages(response.data.totalPages);
+    setCurrentPage(page);
   }catch (error) {
       console.error("Error fetching tutors:", error);
       setResults([]);
     }
   };
 
+  const handleSearch = () => {
+    if (searchQuery.trim() !== "") {
+      navigate(`/search?query=${searchQuery}`); // Updates URL triggers useEffect
+      fetchTutors(searchQuery, 1);
+    }
+  };
 
-  // ✅ Pagination Logic
-  const indexOfLastTutor = currentPage * tutorsPerPage;
-  const indexOfFirstTutor = indexOfLastTutor - tutorsPerPage;
-  const currentTutors = results.slice(indexOfFirstTutor, indexOfLastTutor);
-  const totalPages = Math.ceil(results.length / tutorsPerPage);
+  const handlePageChange = (newPage) => {
+    fetchTutors(searchQuery, newPage);
+  };
+
+  // // ✅ Pagination Logic
+  // const indexOfLastTutor = currentPage * tutorsPerPage;
+  // const indexOfFirstTutor = indexOfLastTutor - tutorsPerPage;
+  // const currentTutors = results.slice(indexOfFirstTutor, indexOfLastTutor);
+  // const totalPages = Math.ceil(results.length / tutorsPerPage);
+  
 
   return (
     <motion.div 
@@ -78,8 +95,10 @@ const StudentSearchResultPage = () => {
                 placeholder="Search a subject" 
                 className="w-full pl-5 pr-12 py-3 border rounded-l-full focus:ring-2 focus:ring-[#00BFA5] bg-gray-100 text-gray-700 text-lg"
               />
-              <button className="px-5 bg-[#00BFA5] text-white text-lg rounded-r-full shadow-md hover:bg-[#009e88] transition">
-                <FaSearch />
+              <button 
+                onClick={handleSearch} // fix trigger API call
+                className="px-5 bg-[#00BFA5] text-white text-lg rounded-r-full shadow-md hover:bg-[#009e88] transition">
+                  <FaSearch />
               </button>
             </div>
           </div>
@@ -95,7 +114,7 @@ const StudentSearchResultPage = () => {
 
           {/* ✅ Pagination (Always at the Bottom) */}
           <div className="mt-auto flex justify-center pt-10">
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
           </div>
         </motion.div>
       </div>

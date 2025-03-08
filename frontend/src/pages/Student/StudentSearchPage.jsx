@@ -40,7 +40,7 @@ const StudentSearchPage = () => {
    
     try {
       const response = await axios.get("http://localhost:5000/api/tutors/search", {
-          params: { subject/*, sortByRating */}
+          params: { subject, sortByRating }
       });
       setResults(response.data);
       if (subject.trim()) {

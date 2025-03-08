@@ -273,10 +273,14 @@ export const updateTutorProfile = async (req, res) => {
 
 export const searchTutors = async (req, res) => {
     try {
-        const { query, subject, sortByRating, price, experience } = req.query;
+        let { query, subject, sortByRating, price, experience, page=1, limit = 3 } = req.query;
+
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 3;
+
         let searchQuery = {};
 
-        // Basic search by query text (will search in name or subject)
+        // basic search by query text
         if (query) {
             searchQuery.$or = [
                 { fullName: { $regex: new RegExp(query, "i") } },
@@ -284,12 +288,12 @@ export const searchTutors = async (req, res) => {
             ];
         }
 
-        // Filter by specific subject
+        // silter by specific subject
         if (subject) {
             searchQuery["subjectsOffered.subject"] = { $regex: new RegExp(subject, "i") };
         }
 
-        // Filter by price range if provided
+        // silter by price range (in case)
         if (price) {
             const [min, max] = price.split('-').map(Number);
             if (!isNaN(min) && !isNaN(max)) {
@@ -299,19 +303,24 @@ export const searchTutors = async (req, res) => {
             }
         }
 
-        // Filter by experience
+        // silter by experience(in case)
         if (experience) {
             searchQuery.experience = { $gte: parseInt(experience) };
         }
 
-        // Execute the query
-        let tutors = await Tutor.find(searchQuery)
-            .select('fullName subjectsOffered institution experience priceRate rating reviewsCount profileImageUrl');
+         // sort by rating
+        const sortOptions = sortByRating === "true" ?  { rating: -1 } : {};
 
-        // Sort by rating if requested
-        if (sortByRating === "true") {
-            tutors = tutors.sort((a, b) => b.rating - a.rating);
-        }
+        // fetch paginated tutors
+        const tutors = await Tutor.find(searchQuery)
+            .select('fullName subjectsOffered institution experience priceRate rating reviewsCount profileImageUrl')
+            .sort(sortOptions) // sort by rating
+            .skip((page - 1) * limit) // skip previous pages
+            .limit(limit); // limit results per page
+
+        const totalTutors = await Tutor.countDocuments(searchQuery); //get total count for pagination
+
+       
 
         // Transform the data to match the frontend expectations
         const formattedTutors = tutors.map(tutor => ({
@@ -328,7 +337,11 @@ export const searchTutors = async (req, res) => {
             reviewsCount: tutor.reviewsCount || 0
         }));
 
-        res.status(200).json(formattedTutors);
+        res.status(200).json({
+            tutors: formattedTutors,
+            totalPages: Math.ceil(totalTutors / limit),
+            currentPage: page,
+        });
     } catch (error) {
         console.error("Error in searchTutors:", error);
         res.status(500).json({ 
