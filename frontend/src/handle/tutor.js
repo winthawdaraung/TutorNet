@@ -151,9 +151,9 @@ export const declineStudentRequest = async (requestId) => {
 };
 
 export const acceptStudentRequest = async (requestId, formData) =>{
-    console.log("Inside acceptStudentRequest:");
-    console.log("RequestID:", requestId);
-    console.log("formData:", formData);
+    // console.log("Inside acceptStudentRequest:");
+    // console.log("RequestID:", requestId);
+    // console.log("formData:", formData);
     try {
         const response = await fetch(`/api/tutors/accept-request/${requestId}`, {
             method: 'POST',
