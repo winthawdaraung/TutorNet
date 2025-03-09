@@ -1,5 +1,6 @@
 import Student from "../models/studentsModel.js";
 import Tutor from "../models/tutorsModel.js";
+import Requests from "../models/requestModel.js"
 import { hashPassword } from "../config/utils.js";
 import cloudinary from "../config/cloudinary.js";
 import { Readable } from 'stream';
@@ -237,5 +238,62 @@ export const getTutorProfile = async (req, res) => {
             success: false,
             message: "Error fetching tutor profile"
         });
+    }
+};
+
+export const createRequest = async (req, res) => {
+    try {
+        const studentId = req.user.id;
+        const { tutorId, subject, message, fromTime, toTime, startDate } = req.body;
+        console.log("StudentID:", studentId);
+        console.log("TutorID:", tutorId);
+        const student = await Student.findById(studentId);
+        const tutor = await Tutor.findById(tutorId);
+
+        if (!student || !tutor) {
+            return res.status(404).json({ 
+                success: false,
+                message: "Student or tutor not found" 
+            });
+        }
+
+        
+        const request = await Requests.create({
+            studentId,
+            tutorId,
+            subject,
+            studentmessage: message, 
+            fromTime,
+            toTime,
+            startDate,
+            status: 'pending'
+        });
+
+       
+        await Tutor.findByIdAndUpdate(
+            tutorId, 
+            { 
+                $push: { 
+                    requests: {
+                        id: request._id,
+                        studentId: student._id,
+                        studentName: student.fullName,
+                        studentText: message,
+                        subject: subject,
+                        time: fromTime + ' - ' + toTime,
+                        date: startDate,
+                        profileImageUrl: student.profileImageUrl
+                    },
+                    notifications:  { id: request._id }
+                } 
+            },{ new: true }
+        );
+        
+        console.log("requestID", request._id);
+        res.status(200).json({ success: true, message: "Request sent successfully", requestId: request._id });
+    }
+    catch (error) {
+        console.error("Error creating request:", error);
+        res.status(500).json({ success: false, message: error.message || "Server error" });
     }
 };

@@ -1,5 +1,6 @@
 import express from "express";
-import { registerStudent, sendRequest, getStudentProfile, updateStudentProfile, getTutorProfile } from "../controllers/studentsController.js";
+import { registerStudent, sendRequest, getStudentProfile, updateStudentProfile, getTutorProfile, createRequest } from "../controllers/studentsController.js";
+
 import { protect } from '../middleware/authMiddleware.js';
 import { upload } from '../middleware/uploadMiddleware.js';
 
@@ -14,6 +15,7 @@ studentsRouter.put('/profile', protect,
     updateStudentProfile
 );
 studentsRouter.post('/send-request', protect, sendRequest);
+studentsRouter.post('/create-request', protect, createRequest);
 
 studentsRouter.get('/tutor-profile/:id', protect, getTutorProfile);
 

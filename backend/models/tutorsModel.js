@@ -1,16 +1,11 @@
 import mongoose from "mongoose";
+import { notificationSchema } from "./notificationModel.js";
 
 const reviewSchema = new mongoose.Schema({
   tutorId: { type: String, required: true },
   studentId: { type: String, required: true },
   rating: { type: Number, required: true },
   comment: { type: String, required: true },
-}, { timestamps: true });
-
-const notificationSchema = new mongoose.Schema({
-  userId: { type: String, required: true, trim: true },
-  message: { type: String, required: true, trim: true },
-  status: { type: String, default: 'unread' }, // unread, read
 }, { timestamps: true });
 
 const subjectSchema = new mongoose.Schema({
@@ -56,14 +51,18 @@ const availabilitySchema = new mongoose.Schema({
   }
 });
 
-const studentRequestSchema = new mongoose.Schema({
-  id: { type: Number, default: 0, unique: true, autoIncrement: true },
+const requestSchema = new mongoose.Schema({
+  id: { type: mongoose.Schema.Types.ObjectId, required: true },
+  studentId: {type: mongoose.Schema.Types.ObjectId},
   studentName: { type: String, required: true },
   studentText: { type: String, required: true },
   subject: { type: String, required: true },
   time: { type: String, required: true },
-  profileImageUrl: { type: String, default: "" },
+  date: { type: String, required: true },
+  profileImageUrl: { type: String, required: true },
+  status: { type: String, default: "Pending"},
 }, { timestamps: true });
+
 
 const tutorSchema = new mongoose.Schema({
     fullName: { type: String, required: true, trim: true },
@@ -86,7 +85,7 @@ const tutorSchema = new mongoose.Schema({
     contactNumber: { type: String, default: "" },
     notifications: [notificationSchema],
     reviews: [reviewSchema],
-    studentRequests: { type: [studentRequestSchema], default: [] },
+    requests: [requestSchema],
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date }
 }, { timestamps: true });

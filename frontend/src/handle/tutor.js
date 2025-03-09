@@ -130,3 +130,45 @@ export const updateTutorProfile = async (formData) => {
         };
     }
 };
+
+export const declineStudentRequest = async (requestId) => {
+    try {
+      const response = await fetch(`/api/tutors/decline-request/${requestId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+      });
+    //   console.log(localStorage.getItem('token'));
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error in declineStudentRequest:', error);
+      return { success: false, error: error.message };
+    }
+};
+
+export const acceptStudentRequest = async (requestId, formData) =>{
+    console.log("Inside acceptStudentRequest:");
+    console.log("RequestID:", requestId);
+    console.log("formData:", formData);
+    try {
+        const response = await fetch(`/api/tutors/accept-request/${requestId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(formData)
+        });
+      //   console.log(localStorage.getItem('token'));
+        
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Error in acceptStudentRequest:', error);
+        return { success: false, error: error.message };
+      }
+}

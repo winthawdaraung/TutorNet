@@ -1,5 +1,5 @@
 import express from "express";
-import { registerTutor, getTutorProfile, updateTutorProfile,searchTutors, getTutorDetails } from "../controllers/tutorsController.js";
+import { registerTutor, getTutorProfile, updateTutorProfile,searchTutors, getTutorDetails, declineStudentRequest, acceptStudentRequest } from "../controllers/tutorsController.js";
 import { protect } from '../middleware/authMiddleware.js';
 import { upload } from '../middleware/uploadMiddleware.js';
 
@@ -20,5 +20,8 @@ tutorsRouter.get('/search',searchTutors)
 
 //GetID
 tutorsRouter.get('/:id', getTutorDetails);
+
+tutorsRouter.post('/decline-request/:requestId', protect, declineStudentRequest);
+tutorsRouter.post('/accept-request/:requestId', protect, acceptStudentRequest);
 
 export default tutorsRouter;

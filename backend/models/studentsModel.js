@@ -1,5 +1,18 @@
 import mongoose from 'mongoose';
 
+const notificationSchema = new mongoose.Schema({
+    id: { type: String, required: true, unique: true },
+    tutorName: { type: String, required: true },
+    tutorImage: { type: String, required: true },
+    message: { type: String, default: "" },
+    subject: { type: String, required: true },
+    date: { type: String, required: true }, // Kept as String since it's in DD/MM/YYYY format
+    time: { type: String, required: true },
+    reply: { type: String, required: true },
+    studyLink: { type: String, required: true },
+    status: { type: String, default: 'unread' }
+}, { timestamps: true });
+
 const studentSchema = new mongoose.Schema({
     fullName: { type: String,required: true,trim: true, },
     email: { type: String, required: true, unique: true, trim: true, },
@@ -10,8 +23,7 @@ const studentSchema = new mongoose.Schema({
     department: { type: String, trim: true, default: null},
     role: { type: String, default: "student" },
     profileImageUrl: { type: String, default: "" },
-    notification: { type: [String], default: [] },
-    booking: { type: [String], default: [] },
+    notification: { type: [notificationSchema], default: [] },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date }
 }, {    
