@@ -144,25 +144,31 @@ export const getTutorProfile = async (id) => {
             error: error.message || 'Failed to fetch tutor profile'
         };
     }
-}
+};
 
-export const sendBookingRequest = async (tutorId, bookingrequest) => {
-    let token;
+//for request
+export const sendBookingRequest = async (bookingData) => {
     try {
-      const response = await fetch(`api/students/bookings:id/${tutorId}`, { //fetch from the student booking view
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(bookingrequest),
-      });
-  
-      const result = await response.json();
-      
-      return result;
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:5000/api/bookings/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(bookingData)
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            console.log("Booking request sent successfully:", data);
+            return { success: true, data };
+        } else {
+            console.error("Error sending booking request:", data.message);
+            return { success: false, error: data.message || 'Failed to send booking request' };
+        }
     } catch (error) {
-      console.error("Error sending booking request:", error);
-      return { success: false, error: "Error sending request" };
+        console.error("Error sending booking request:", error);
+        return { success: false, error: error.message || 'Failed to send booking request' };
     }
-  };
+};

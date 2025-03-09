@@ -1,15 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import StudentNavbar from "../../Components/Student/StudentNavbar/StudentNavbar";
 import Footer from "../../Components/homeComponents/footer/Footer";
 import NotificationCard from "../../Components/Student/StudentNotifications/NotificationCard";
 import NotificationPopup from "../../Components/Student/StudentNotifications/NotificationPopup";
-import ReviewForm from "../../Components/Student/StudentNotifications/ReviewForm"; // ✅ Import Review Modal
-import studentNotifications from "../../mockData/Student/StudentNotifications";
+import ReviewForm from "../../Components/Student/StudentNotifications/ReviewForm";
+// import studentNotifications from "../../mockData/Student/StudentNotifications";
+import { getStudentProfile } from "../../handle/student"; // Assuming this import was missing
 
 const StudentNotificationsPage = () => {
-  const [notifications, setNotifications] = useState(studentNotifications);
+  const [notifications, setNotifications] = useState([]);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [reviewNotification, setReviewNotification] = useState(null);
+
+  useEffect(() => {
+    // // Sort mock data initially if needed
+    // const sortedMockNotifications = [...studentNotifications].sort((a, b) => {
+    //   return new Date(b.timestamp || b.createdAt) - new Date(a.timestamp || a.createdAt);
+    // });
+    // setNotifications(sortedMockNotifications);
+    
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await getStudentProfile();
+      if (response.success) {
+        
+        // Sort notifications by timestamp (newest first)
+        if (response.data.notification && response.data.notification.length > 0) {
+          const sortedNotifications = [...response.data.notification].sort((a, b) => {
+            return new Date(b.timestamp || b.createdAt) - new Date(a.timestamp || a.createdAt);
+          });
+          setNotifications(sortedNotifications);
+        }
+      } else {
+        console.error("Failed to fetch student profile:", response.error);
+      }
+    } catch (error) {
+      console.error("Error fetching student profile:", error);
+    }
+  };
 
   const handleViewResponse = (notification) => {
     setSelectedNotification(notification);
@@ -48,7 +79,7 @@ const StudentNotificationsPage = () => {
                 <NotificationCard
                   key={notification.id}
                   notification={notification}
-                  onLeaveReview={handleLeaveReview} // ✅ Update
+                  onLeaveReview={handleLeaveReview}
                   onViewResponse={handleViewResponse}
                 />
               ))

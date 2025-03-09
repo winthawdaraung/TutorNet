@@ -6,6 +6,8 @@ import { hashPassword } from "../config/utils.js";
 //import { fileURLToPath } from 'url';
 import cloudinary from "../config/cloudinary.js";
 import { Readable } from 'stream';
+import mongoose from "mongoose";
+import { getStudentProfile } from "./studentsController.js";
 
 //const __filename = fileURLToPath(import.meta.url);
 //const __dirname = path.dirname(__filename);
@@ -403,4 +405,138 @@ export const getTutorDetails = async (req, res) => {
     }
 };
 
+export const declineStudentRequest = async (req, res) => {
+    try {
+        const { requestId } = req.params;
+        const tutorId = req.user.id;
 
+        console.log('Received requestId:', requestId);
+        console.log('Received tutorId:', tutorId);
+
+        if (typeof requestId !== 'string') {
+            return res.status(400).json({
+                success: false,
+                message: "Request ID must be a valid string"
+            });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(requestId)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Invalid request ID' 
+            });
+        }
+
+        const result = await Tutor.findOneAndUpdate(
+            { _id: tutorId },
+            { $pull: { requests: { id: requestId } } },
+            { new: true }
+        );
+
+        // console.log('Update result:', result);
+
+        if (!result) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Request not found or could not be removed' 
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Request declined and removed successfully',
+            updatedRequests: result.requests
+        });
+    } catch (error) {
+        console.error('Error declining request:', error);
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Server error',
+            error: error.message 
+        });
+    }
+};
+
+export const acceptStudentRequest = async (req, res) => {
+    try {
+        const { requestId } = req.params;
+        const formData = req.body;
+        const tutorId = req.user.id;
+
+        if (!mongoose.Types.ObjectId.isValid(requestId)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Invalid request ID' 
+            });
+        }
+      
+        const studentId = formData.studentId;
+
+        const student = await Student.findById(studentId).select('-password -resetPasswordToken -resetPasswordExpires');
+        const tutor = await Tutor.findById(tutorId).select('-password -resetPasswordToken -resetPasswordExpires');
+  
+        if (!student || !tutor) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Student or tutor not found' 
+            });
+        }
+  
+        const updatedStudent = await Student.findByIdAndUpdate(
+            studentId,
+            {
+                $push: {
+                    notification: {
+                        _id: new mongoose.Types.ObjectId(),
+                        tutorId,
+                        tutorName: tutor.fullName,
+                        tutorImage: tutor.profileImageUrl,
+                        message: formData.reply,
+                        reply: formData.reply,
+                        subject: formData.subject,
+                        time: formData.time,
+                        date: formData.date,
+                        profileImageUrl: tutor.profileImageUrl || 'https://via.placeholder.com/150',
+                        studyLink: formData.studyLink
+                    }
+                }
+            },
+            { new: true }
+        );
+
+        if (!updatedStudent) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Failed to update student with notification' 
+            });
+        }
+
+        // Update the status of the specific request in the tutor's requests array
+        const updatedTutor = await Tutor.findOneAndUpdate(
+            { _id: tutorId, 'requests.id': requestId },
+            { $set: { 'requests.$.status': 'accepted' } },
+            { new: true }
+        );
+
+        if (!updatedTutor) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Failed to update tutor request status' 
+            });
+        }
+
+        return res.status(200).json({ 
+            success: true, 
+            message: 'Request accepted successfully',
+            updatedNotifications: updatedStudent.notifications
+        });
+  
+    } catch (error) {
+        console.error('Error accepting request:', error);
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Server error',
+            error: error.message 
+        });
+    }
+};

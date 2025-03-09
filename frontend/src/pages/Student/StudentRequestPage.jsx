@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {sendBookingRequest} from "../../handle/student"
 import { motion } from "framer-motion";
 import StudentNavbar from "../../Components/Student/StudentNavbar/StudentNavbar";
 import Footer from "../../Components/homeComponents/footer/Footer";
 // import studentProfileData from "../../mockData/Student/StudentProfileData";
 import ThemedButton from "../../Components/Student/StudentRequest/ThemedButton";
 import CustomDropdown from "../../Components/Student/StudentRequest/CustomDropdown";
-import { getTutorProfile } from "../../handle/student";
+import { getTutorProfile, sendBookingRequest } from "../../handle/student";
 import { useParams } from "react-router-dom";
 
 const StudentRequestPage = () => {
@@ -41,10 +40,13 @@ const StudentRequestPage = () => {
 
   //form data to handle all state
   const [formData, setFormData] = useState({
+    tutorId: id,
     tutorName: "",
     subject: "",
     message: "",
-    time: "",
+    startDate: "",
+    fromTime: "",
+    toTime: ""
   });
 
   useEffect(() => {
@@ -54,12 +56,13 @@ const StudentRequestPage = () => {
               if (result.success) {
                   setTutorData(result.tutor);
                   setFormData({
+                    tutorId: result.tutor.id,
                     tutorName: result.tutor.fullName,
-                    subject: result.tutor.subjectsOffered.length
-                      ? result.tutor.subjectsOffered[0].subject
-                      : "",
+                    subject: result.tutor.subjectsOffered.length ? result.tutor.subjectsOffered[0].subject : "",
                     message: "",
-                    time: "",
+                    startDate: "",
+                    fromTime: "",
+                    toTime: ""
                   });
               } else {
                 console.error(result.error || 'Failed to fetch tutor data');
@@ -77,89 +80,45 @@ const StudentRequestPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.subject || !formData.message || !formData.time) {
-      alert("⚠️ Please fill in all fields.");
-      return;
+
+    //check form data before submission
+    console.log(formData)
+
+    if (!formData.subject || !formData.message || !formData.startDate || !formData.fromTime || !formData.toTime) {
+        alert("⚠️ Please fill in all fields.");
+        return;
     }
-    console.log("✅ Request Sent:", formData);
+    
     setIsSubmitting(true);
     setError(null);
 
-  const sendBookingRequest = async (tutorId, message) => {
-      let token;
-      try {
-        const response = await fetch(`api/students/bookings:id/${tutorId}`, { //fetch from the student booking view
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify(message),
-        });
-    
-        const result = await response.json();
-        
-        return result;
-      } catch (error) {
-        console.error("Error sending booking request:", error);
-        return { success: false, error: "Error sending request" };
-      }
-    };
-
     try {
-      const result = await sendBookingRequest(id, { 
-        message: formData.message, 
-        selectedTime: formData.time,
-       });
-  
-      if (result.success) {
-        navigate(`/tutor-profile/${id}`, {replace: true});
-      } else {
-        setError(result.error || "Failed to send request.");
-      }
+        const result = await sendBookingRequest({
+          tutorId: formData.tutorId,
+          tutorName: formData.tutorName,
+          subject: formData.subject,
+          message: formData.message,
+          startDate: formData.startDate,
+          fromTime: formData.fromTime,
+          toTime: formData.toTime
+        });
+
+        if (result.success) {
+            alert("Booking request sent successfully!");
+            navigate(`/tutor-profile/${id}`, { replace: true });
+        } else {
+            setError(result.error || "Failed to send request.");
+        }
     } catch (err) {
-      setError("Error sending request.");
-      console.error("Error:", err);
+        setError("Error sending request.");
+        console.error("Error:", err);
     } finally {
-      setIsSubmitting(false);
+        setIsSubmitting(false);
     }
-    };
+};
 
-  //console.log("Tutor Data", tutorData.fullName);
-
-  // const [formData, setFormData] = useState({
-  //     tutorName: "",
-  //     subject: "",
-  //     message: "",
-  //     time: "",
-  // });
-
-  // useEffect(() => {
-  //     setFormData({
-  //         tutorName: tutorData.fullName,
-  //         subject: tutorData.subjectsOffered.length ? tutorData.subjectsOffered[0].subject : "",
-  //         message: "",
-  //         time: "",
-  //     });
-  // }, [tutorData]);
-
-  // console.log("Form Data", formData);
-
-  
-  //const [isSubmitting, setIsSubmitting] = useState(false);
-
-  
-  
-
-  //   setTimeout(() => {
-  //     navigate(`/tutor-profile/${id}`, { replace: true });
-  //   }, 1500);
-  // };
-
-  // setIsSubmitting(true);
-  
 
   return (
     <motion.div 
@@ -228,15 +187,46 @@ const StudentRequestPage = () => {
 
             {/* Preferred Time */}
             <div>
-              <label className="text-gray-700 font-medium">Preferred Time</label>
-              <input 
-                type="datetime-local" 
-                name="time"
-                value={formData.time} 
-                onChange={handleChange}
-                className="w-full px-4 py-3 border rounded-lg bg-gray-100 text-gray-700 focus:ring-2 focus:ring-[#00BFA5]"
-                required
-              />
+              <label className="text-gray-700 font-medium block mb-2">Appointment Period</label>
+              <div className="flex flex-wrap gap-2 items-center">
+                {/* Start Date */}
+                <div className="flex-1 min-w-[150px]">
+                  <label className="text-gray-600 text-sm block mb-1">Date</label>
+                  <input 
+                    type="date" 
+                    name="startDate"
+                    value={formData.startDate} 
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100 text-gray-700 focus:ring-2 focus:ring-[#00BFA5]"
+                    required
+                  />
+                </div>
+                {/* From Time */}
+                <div className="flex-1 min-w-[120px]">
+                  <label className="text-gray-600 text-sm block mb-1">From</label>
+                  <input 
+                    type="time" 
+                    name="fromTime"
+                    value={formData.fromTime} 
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100 text-gray-700 focus:ring-2 focus:ring-[#00BFA5]"
+                    required
+                  />
+                </div>
+                
+                {/* To Time */}
+                <div className="flex-1 min-w-[120px]">
+                  <label className="text-gray-600 text-sm block mb-1">To</label>
+                  <input 
+                    type="time" 
+                    name="toTime"
+                    value={formData.toTime} 
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100 text-gray-700 focus:ring-2 focus:ring-[#00BFA5]"
+                    required
+                  />
+                </div>
+              </div>
             </div>
 
             {/* ✅ Submit Button Component */}

@@ -44,7 +44,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/students', studentsRouter);
 app.use('/api/tutors', tutorsRouter);
 app.use('/api/users', userRouter);
-app.use('/api/bookings/:id', bookingsRouter);
+app.use('/api/bookings', bookingsRouter);
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
