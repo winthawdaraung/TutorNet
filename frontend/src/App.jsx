@@ -24,6 +24,7 @@ import TutormyProfilePage from "./pages/Tutor/Tutormyprofilepage";
 import TutorEditProfile from "./pages/Tutor/Tutoreditmyprofilepage";
 import TutorNotificationPage from "./pages/Tutor/Tutornotificationpage";
 
+
 function App() {
   return (
     <Router>
@@ -48,6 +49,10 @@ function App() {
           path="/student-search-results"
           element={<StudentSearchResultPage />}
         />
+        <Route
+         path="/search"
+         element={<StudentSearchResultPage />}  //ensure the route exist for studentsearchpage
+         />
         <Route
           path="/student-notifications"
           element={<StudentNotificationsPage />}
