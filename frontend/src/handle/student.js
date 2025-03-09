@@ -145,3 +145,24 @@ export const getTutorProfile = async (id) => {
         };
     }
 }
+
+export const sendBookingRequest = async (tutorId, bookingrequest) => {
+    let token;
+    try {
+      const response = await fetch(`api/students/bookings:id/${tutorId}`, { //fetch from the student booking view
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(bookingrequest),
+      });
+  
+      const result = await response.json();
+      
+      return result;
+    } catch (error) {
+      console.error("Error sending booking request:", error);
+      return { success: false, error: "Error sending request" };
+    }
+  };

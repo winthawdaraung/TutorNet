@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import {sendBookingRequest} from "../../handle/student"
 import { motion } from "framer-motion";
 import StudentNavbar from "../../Components/Student/StudentNavbar/StudentNavbar";
 import Footer from "../../Components/homeComponents/footer/Footer";
@@ -17,6 +18,10 @@ const StudentRequestPage = () => {
 
   const navigate = useNavigate();
   const { id } = useParams();
+  //const[message, setMessage] = useState("");
+  //const[selectedTime, setSelectedTime] = useState("");
+  const[isSubmitting, setIsSubmitting] = useState(false);
+  const[error, setError] = useState(null);
   const [tutorData, setTutorData] = useState({
       fullName: '',
       institution: '',
@@ -34,12 +39,28 @@ const StudentRequestPage = () => {
       reviews: []
   });
 
+  //form data to handle all state
+  const [formData, setFormData] = useState({
+    tutorName: "",
+    subject: "",
+    message: "",
+    time: "",
+  });
+
   useEffect(() => {
       const fetchTutorData = async () => {
           try {
               const result = await getTutorProfile(id);
               if (result.success) {
                   setTutorData(result.tutor);
+                  setFormData({
+                    tutorName: result.tutor.fullName,
+                    subject: result.tutor.subjectsOffered.length
+                      ? result.tutor.subjectsOffered[0].subject
+                      : "",
+                    message: "",
+                    time: "",
+                  });
               } else {
                 console.error(result.error || 'Failed to fetch tutor data');
               }
@@ -52,34 +73,11 @@ const StudentRequestPage = () => {
       fetchTutorData();
   }, [id]);
 
-  console.log("Tutor Data", tutorData.fullName);
-
-  const [formData, setFormData] = useState({
-      tutorName: "",
-      subject: "",
-      message: "",
-      time: "",
-  });
-
-  useEffect(() => {
-      setFormData({
-          tutorName: tutorData.fullName,
-          subject: tutorData.subjectsOffered.length ? tutorData.subjectsOffered[0].subject : "",
-          message: "",
-          time: "",
-      });
-  }, [tutorData]);
-
-  console.log("Form Data", formData);
-
-  
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     if (!formData.subject || !formData.message || !formData.time) {
       alert("⚠️ Please fill in all fields.");
@@ -87,11 +85,81 @@ const StudentRequestPage = () => {
     }
     console.log("✅ Request Sent:", formData);
     setIsSubmitting(true);
+    setError(null);
 
-    setTimeout(() => {
-      navigate(`/tutor-profile/${id}`, { replace: true });
-    }, 1500);
-  };
+  const sendBookingRequest = async (tutorId, message) => {
+      let token;
+      try {
+        const response = await fetch(`api/students/bookings:id/${tutorId}`, { //fetch from the student booking view
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(message),
+        });
+    
+        const result = await response.json();
+        
+        return result;
+      } catch (error) {
+        console.error("Error sending booking request:", error);
+        return { success: false, error: "Error sending request" };
+      }
+    };
+
+    try {
+      const result = await sendBookingRequest(id, { 
+        message: formData.message, 
+        selectedTime: formData.time,
+       });
+  
+      if (result.success) {
+        navigate(`/tutor-profile/${id}`, {replace: true});
+      } else {
+        setError(result.error || "Failed to send request.");
+      }
+    } catch (err) {
+      setError("Error sending request.");
+      console.error("Error:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
+    };
+
+  //console.log("Tutor Data", tutorData.fullName);
+
+  // const [formData, setFormData] = useState({
+  //     tutorName: "",
+  //     subject: "",
+  //     message: "",
+  //     time: "",
+  // });
+
+  // useEffect(() => {
+  //     setFormData({
+  //         tutorName: tutorData.fullName,
+  //         subject: tutorData.subjectsOffered.length ? tutorData.subjectsOffered[0].subject : "",
+  //         message: "",
+  //         time: "",
+  //     });
+  // }, [tutorData]);
+
+  // console.log("Form Data", formData);
+
+  
+  //const [isSubmitting, setIsSubmitting] = useState(false);
+
+  
+  
+
+  //   setTimeout(() => {
+  //     navigate(`/tutor-profile/${id}`, { replace: true });
+  //   }, 1500);
+  // };
+
+  // setIsSubmitting(true);
+  
 
   return (
     <motion.div 
