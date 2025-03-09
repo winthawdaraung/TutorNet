@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
 import tutorProfileDataMock from "../../mockData/TutorProfileData";
 import defaultProfile from "../../assets/tutor/defaultProfile.png";
 import { updateTutorProfile, getTutorProfile } from "../../handle/tutor";
@@ -176,6 +176,13 @@ function EditProfile() {
     const updatedSubjects = [...subjects];
     updatedSubjects[index] = { ...updatedSubjects[index], [field]: value };
     setSubjects(updatedSubjects);
+  };
+
+  // Handle creating a new subject option
+  const handleCreateSubject = (inputValue, index) => {
+    const newOption = { value: inputValue, label: inputValue };
+    handleSubjectChange(index, "subject", inputValue);
+    return newOption;
   };
 
   // Add a new subject entry (empty values will show placeholders)
@@ -500,7 +507,9 @@ function EditProfile() {
                 // Convert the subject string into a matching option for react-select
                 const selectedOption = availableSubjects.find(
                   (option) => option.value === subjectItem.subject
-                );
+                ) || 
+                // If not found in predefined options, create a custom option object
+                (subjectItem.subject ? { value: subjectItem.subject, label: subjectItem.subject } : null);
 
                 return (
                   <div
@@ -508,7 +517,7 @@ function EditProfile() {
                     className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-2 space-y-2 sm:space-y-0 mb-4"
                   >
                     <div className="w-full sm:w-60">
-                      <Select
+                      <CreatableSelect
                         className="basic-single text-sm"
                         classNamePrefix="select"
                         options={availableSubjects}
@@ -516,8 +525,10 @@ function EditProfile() {
                         onChange={(option) =>
                           handleSubjectChange(index, "subject", option?.value)
                         }
-                        placeholder="Select a subject..."
+                        onCreateOption={(inputValue) => handleCreateSubject(inputValue, index)}
+                        placeholder="Select or type a subject..."
                         isSearchable
+                        formatCreateLabel={(inputValue) => `Add "${inputValue}"`}
                       />
                     </div>
 
@@ -552,37 +563,29 @@ function EditProfile() {
             </div>
 
             {/* Submit Button */}
-            {/* <div className="mt-6 sm:mt-8">
-              <button
+            <div className="col-span-1 md:col-span-2 flex flex-col items-center space-y-4 mt-6">
+              <motion.button
+                whileHover={{ scale: isLoading ? 1 : 1.05 }}
+                whileTap={{ scale: isLoading ? 1 : 0.95 }}
                 type="submit"
-                className="bg-teal-500 text-white px-4 sm:px-6 py-2 rounded hover:bg-teal-600 transition text-sm sm:text-base"
+                disabled={isLoading}
+                className={`bg-yellow-500 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-yellow-600 flex items-center space-x-2 ${
+                  isLoading ? 'opacity-75 cursor-not-allowed' : ''
+                }`}
               >
-                Save Changes
-              </button>
-            </div> */}
-            <div className="col-span-1 md:col-span-2 flex flex-col items-center space-y-4">
-                <motion.button
-                  whileHover={{ scale: isLoading ? 1 : 1.05 }}
-                  whileTap={{ scale: isLoading ? 1 : 0.95 }}
-                  type="submit"
-                  disabled={isLoading}
-                  className={`bg-yellow-500 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-yellow-600 flex items-center space-x-2 ${
-                    isLoading ? 'opacity-75 cursor-not-allowed' : ''
-                  }`}
-                >
-                  {isLoading ? (
-                    <>
-                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      <span>Saving...</span>
-                    </>
-                  ) : (
-                    <span>Save Profile</span>
-                  )}
-                </motion.button>
-              </div>
+                {isLoading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <span>Save Profile</span>
+                )}
+              </motion.button>
+            </div>
           </form>
         </div>
       </div>

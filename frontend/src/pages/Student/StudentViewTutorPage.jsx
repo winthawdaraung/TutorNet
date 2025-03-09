@@ -1,37 +1,92 @@
-import { useNavigate } from "react-router-dom";
-import studentProfileData from "../../mockData/Student/StudentProfileData";
+import { useNavigate, useParams } from "react-router-dom";
 import StudentNavbar from "../../Components/Student/StudentNavbar/StudentNavbar";
 import Footer from "../../Components/homeComponents/footer/Footer";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { getTutorProfile } from "../../handle/student";
+import { useState, useEffect } from "react";
 
 function StudentViewTutorPage() {  
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [tutorData, setTutorData] = useState({
+    fullName: '',
+    institution: '',
+    qualification: '',
+    rating: 0,
+    reviewsCount: 0,
+    aboutMe: '',
+    aboutMySession: '',
+    cvDownload: '',
+    availability: {},
+    contactEmail: '',
+    contactNumber: '',
+    profileImageUrl: '',
+    subjectsOffered: [],
+    reviews: []
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const navigate = useNavigate(); // ✅ ใช้ useNavigate() ที่ถูกต้อง
+  useEffect(() => {
+    const fetchTutorData = async () => {
+      try {
+        const result = await getTutorProfile(id);
+        if (result.success) {
+          setTutorData(result.tutor);
+        } else {
+          setError(result.error || 'Failed to fetch tutor data');
+        }
+      } catch (err) {
+        setError('Error fetching tutor data');
+        console.error('Error:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTutorData();
+  }, [id]);
 
   const handleSendRequest = () => {
-    navigate("/student-request"); // ✅ เปลี่ยนเส้นทางไปยัง StudentSentReqPage.jsx
+    navigate(`/student-request/${id}`, { replace: false });
+    // StudentRequestPage(tutorData);
   };
 
-  const {
-    fullName,
-    institution,
-    qualification,
-    rating,
-    reviewsCount,
-    aboutMe,
-    aboutMySession,
-    cvDownload,
-    availability = {},
-    contactEmail,
-    contactNumber,
-    profileImageUrl,
-    subjectsOffered,
-    reviews,
-  } = studentProfileData;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex flex-col">
+        <StudentNavbar />
+        <div className="flex-grow flex justify-center items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-500 border-t-transparent"></div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
-// ✅ Star rating renderer with animation
-const renderStars = (rating) => {
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex flex-col">
+        <StudentNavbar />
+        <div className="flex-grow flex justify-center items-center">
+          <div className="text-red-500 text-center">
+            <p className="text-xl font-semibold">{error}</p>
+            <button 
+              onClick={() => navigate(-1)}
+              className="mt-4 text-teal-500 hover:underline"
+            >
+              Go Back
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // ✅ Star rating renderer with animation
+  const renderStars = (rating) => {
     const fullStars = Math.floor(rating);
     const halfStar = rating % 1 !== 0;
     
@@ -70,9 +125,10 @@ const renderStars = (rating) => {
         ))}
       </div>
     );
-};
-// ✅ Function to render reviews
-const renderReviews = () => {
+  };
+
+  // ✅ Function to render reviews
+  const renderReviews = () => {
     return (
       <motion.div 
         className="mb-6"
@@ -82,7 +138,7 @@ const renderReviews = () => {
         viewport={{ once: true, amount: 0.3 }} // ✅ Triggers when 30% is visible
       >
         <h2 className="text-xl font-semibold mb-4">Ratings & Reviews</h2>
-        {reviews && reviews.length > 0 ? (
+        {tutorData.reviews && tutorData.reviews.length > 0 ? (
           <motion.div 
             className="space-y-4"
             initial="hidden"
@@ -93,7 +149,7 @@ const renderReviews = () => {
             }}
             viewport={{ once: true, amount: 0.3 }}
           >
-            {reviews.map((review) => (
+            {tutorData.reviews.map((review) => (
               <motion.div
                 key={review.id}
                 className="border p-4 rounded-lg shadow-sm bg-gray-50"
@@ -131,9 +187,9 @@ const renderReviews = () => {
     );
   };
 
-// Function to render the availability table
-const renderAvailabilityTable = () => {
-    console.log("Availability Data:", availability); // ✅ Debugging Data
+  // Function to render the availability table
+  const renderAvailabilityTable = () => {
+    console.log("Availability Data:", tutorData.availability); // ✅ Debugging Data
     const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     const timeSlots = [
       { key: "morning", label: "9-12 PM" },
@@ -175,7 +231,7 @@ const renderAvailabilityTable = () => {
                 <td className="p-2 border-b border-gray-300 border-r capitalize">{day}</td>
                 {timeSlots.map((slot) => (
                   <td key={slot.key} className="p-2 border-b border-gray-300 border-r">
-                    {availability?.[day.toLowerCase()]?.[slot.key] ? 
+                    {tutorData.availability?.[day.toLowerCase()]?.[slot.key] ? 
                       <motion.span 
                         className="text-teal-500 font-bold"
                         initial={{ scale: 0 }} 
@@ -195,8 +251,9 @@ const renderAvailabilityTable = () => {
       </motion.div>
     );
   };
+
   // If profileImageUrl is empty, use a placeholder image
-  const displayProfileImage = profileImageUrl && profileImageUrl.trim() ? profileImageUrl : "https://via.placeholder.com/150";
+  const displayProfileImage = tutorData.profileImageUrl && tutorData.profileImageUrl.trim() ? tutorData.profileImageUrl : "https://via.placeholder.com/150";
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -212,181 +269,183 @@ const renderAvailabilityTable = () => {
               <img src={displayProfileImage} alt="Student profile" className="w-32 h-32 object-cover rounded-full border border-gray-300" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold">{fullName}</h1>
-              <p className="text-gray-600">{qualification}, {institution}</p>
+              <h1 className="text-3xl font-bold">{tutorData.fullName}</h1>
+              <p className="text-gray-600">{tutorData.qualification}, {tutorData.institution}</p>
               <div className="flex items-center mt-2">
-                <div className="mr-2">{renderStars(rating)}</div>
-                <span className="text-gray-600 text-sm">({reviewsCount} reviews)</span>
+                <div className="mr-2">{renderStars(tutorData.rating)}</div>
+                <span className="text-gray-600 text-sm">({tutorData.reviewsCount} reviews)</span>
               </div>
             </div>
           </div>
 
           {/* About Me */}
-<motion.div 
-  className="mb-6" // 🔹 Increased bottom margin for better spacing
-  initial={{ opacity: 0, y: 20 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.6 }}
-  viewport={{ once: true, amount: 0.3 }} // ✅ Animation triggers when 30% is visible
->
-  <h2 className="text-xl font-semibold mb-2">About Me</h2> {/* 🔹 Added more bottom spacing */}
-  <p className="text-gray-700 leading-relaxed">{aboutMe}</p> {/* 🔹 Removed border & improved readability */}
-</motion.div>
+          <motion.div 
+            className="mb-6" // 🔹 Increased bottom margin for better spacing
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true, amount: 0.3 }} // ✅ Animation triggers when 30% is visible
+          >
+            <h2 className="text-xl font-semibold mb-2">About Me</h2> {/* 🔹 Added more bottom spacing */}
+            <p className="text-gray-700 leading-relaxed">{tutorData.aboutMe}</p> {/* 🔹 Removed border & improved readability */}
+          </motion.div>
 
-{/* About My Session */}
-<motion.div 
-  className="mb-6" // 🔹 Increased bottom margin for better spacing
-  initial={{ opacity: 0, y: 20 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.6, delay: 0.2 }}
-  viewport={{ once: true, amount: 0.3 }} // ✅ Animation triggers when 30% is visible
->
-  <h2 className="text-xl font-semibold mb-2">About My Session</h2> {/* 🔹 Added more bottom spacing */}
-  <p className="text-gray-700 leading-relaxed">{aboutMySession}</p> {/* 🔹 Removed border & improved readability */}
-</motion.div>
+          {/* About My Session */}
+          <motion.div 
+            className="mb-6" // 🔹 Increased bottom margin for better spacing
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true, amount: 0.3 }} // ✅ Animation triggers when 30% is visible
+          >
+            <h2 className="text-xl font-semibold mb-2">About My Session</h2> {/* 🔹 Added more bottom spacing */}
+            <p className="text-gray-700 leading-relaxed">{tutorData.aboutMySession}</p> {/* 🔹 Removed border & improved readability */}
+          </motion.div>
 
           {/* CV Section */}
-<motion.div 
-  className="mb-6" // 🔹 Added more spacing for a cleaner layout
-  initial={{ opacity: 0, y: 20 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.6, delay: 0.4 }} // 🔹 Slight delay for a staggered effect
-  viewport={{ once: true, amount: 0.3 }} // ✅ Animation triggers when 30% is visible
->
-<h2 className="text-xl font-semibold mb-2">Curriculum Vitae</h2> {/* 🔹 Same styling as other sections */}
-  {cvDownload ? (
-    <motion.div 
-      className="w-full"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.5 }} // 🔹 Same fade-in as text
-      viewport={{ once: true, amount: 0.3 }}
-    >
-      {/* ✅ PDF Preview */}
-      <iframe
-        src={cvDownload}
-        className="w-full h-96 rounded-lg shadow-md" // 🔹 Removed border, added shadow for a sleek look
-        title="CV Preview"
-      />
-      
-      {/* ✅ Download Button */}
-      <motion.div 
-        className="mt-3 text-left" 
-        initial={{ opacity: 0, y: 10 }} 
-        whileInView={{ opacity: 1, y: 0 }} 
-        transition={{ duration: 0.4, delay: 0.6 }} 
-        viewport={{ once: true, amount: 0.3 }} // ✅ Button animation triggers when visible
-      >
-        <a
-          href={cvDownload}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-teal-500 hover:underline font-semibold text-lg"
-        >
-          Download Full CV (PDF)
-        </a>
-      </motion.div>
-    </motion.div>
-  ) : (
-    <p className="text-gray-500">No CV uploaded</p>
-  )}
-</motion.div> 
-            {/* ✅ Ratings & Reviews Section */}
+          <motion.div 
+            className="mb-6" // 🔹 Added more spacing for a cleaner layout
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }} // 🔹 Slight delay for a staggered effect
+            viewport={{ once: true, amount: 0.3 }} // ✅ Animation triggers when 30% is visible
+          >
+            <h2 className="text-xl font-semibold mb-2">Curriculum Vitae</h2> {/* 🔹 Same styling as other sections */}
+            {tutorData.cvDownload ? (
+              <motion.div 
+                className="w-full"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 }} // 🔹 Same fade-in as text
+                viewport={{ once: true, amount: 0.3 }}
+              >
+                {/* ✅ PDF Preview */}
+                <iframe
+                  src={tutorData.cvDownload}
+                  className="w-full h-96 rounded-lg shadow-md" // 🔹 Removed border, added shadow for a sleek look
+                  title="CV Preview"
+                />
+                
+                {/* ✅ Download Button */}
+                <motion.div 
+                  className="mt-3 text-left" 
+                  initial={{ opacity: 0, y: 10 }} 
+                  whileInView={{ opacity: 1, y: 0 }} 
+                  transition={{ duration: 0.4, delay: 0.6 }} 
+                  viewport={{ once: true, amount: 0.3 }} // ✅ Button animation triggers when visible
+                >
+                  <a
+                    href={tutorData.cvDownload}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-teal-500 hover:underline font-semibold text-lg"
+                  >
+                    {/* Download Full CV (PDF) */}
+                    View Full CV
+                  </a>
+                </motion.div>
+              </motion.div>
+            ) : (
+              <p className="text-gray-500">No CV uploaded</p>
+            )}
+          </motion.div> 
+
+          {/* ✅ Ratings & Reviews Section */}
           {renderReviews()}
           
-{/* Subjects Offered */}
-<motion.div 
-  className="mb-6" // 🔹 More spacing for better layout
-  initial={{ opacity: 0, y: 20 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.6, delay: 0.4 }}
-  viewport={{ once: true, amount: 0.3 }} // ✅ Trigger animation when 30% is visible
->
-  <h2 className="text-xl font-semibold mb-2">Subjects Offered</h2> 
+          {/* Subjects Offered */}
+          <motion.div 
+            className="mb-6" // 🔹 More spacing for better layout
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true, amount: 0.3 }} // ✅ Trigger animation when 30% is visible
+          >
+            <h2 className="text-xl font-semibold mb-2">Subjects Offered</h2> 
 
-  <motion.table 
-    className="table-auto w-full border border-gray-300"
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.6, delay: 0.5 }}
-    viewport={{ once: true, amount: 0.3 }}
-  >
-    <thead className="bg-gray-100"> {/* ✅ Removed unnecessary border class */}
-      <motion.tr 
-        initial={{ opacity: 0, y: -10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.6 }}
-        viewport={{ once: true, amount: 0.3 }}
-      >
-        <th className="px-4 py-2 border-x border-gray-300"> Subject</th> {/* ✅ No bottom border */}
-        <th className="px-4 py-2 border-x border-gray-300">Topic</th>   {/* ✅ No bottom border */}
-      </motion.tr>
-    </thead>
-    <tbody className="border-t border-gray-300"> {/* ✅ Added top border to keep table structure */}
-      {subjectsOffered.map((item, index) => (
-        <motion.tr 
-          key={index}
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.7 + index * 0.1 }} // ✅ Rows animate one-by-one
-          viewport={{ once: true, amount: 0.3 }}
-          className="text-center"
-        >
-          <td className="border border-gray-300 px-4 py-2">{item.subject}</td> {/* ✅ Borders remain */}
-          <td className="border border-gray-300 px-4 py-2">{item.topic}</td> {/* ✅ Borders remain */}
-        </motion.tr>
-      ))}
-    </tbody>
-  </motion.table>
-</motion.div>
+            <motion.table 
+              className="table-auto w-full border border-gray-300"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              viewport={{ once: true, amount: 0.3 }}
+            >
+              <thead className="bg-gray-100"> {/* ✅ Removed unnecessary border class */}
+                <motion.tr 
+                  initial={{ opacity: 0, y: -10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.6 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                >
+                  <th className="px-4 py-2 border-x border-gray-300"> Subject</th> {/* ✅ No bottom border */}
+                  <th className="px-4 py-2 border-x border-gray-300">Topic</th>   {/* ✅ No bottom border */}
+                </motion.tr>
+              </thead>
+              <tbody className="border-t border-gray-300"> {/* ✅ Added top border to keep table structure */}
+                {tutorData.subjectsOffered.map((item, index) => (
+                  <motion.tr 
+                    key={index}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.7 + index * 0.1 }} // ✅ Rows animate one-by-one
+                    viewport={{ once: true, amount: 0.3 }}
+                    className="text-center"
+                  >
+                    <td className="border border-gray-300 px-4 py-2">{item.subject}</td> {/* ✅ Borders remain */}
+                    <td className="border border-gray-300 px-4 py-2">{item.topic}</td> {/* ✅ Borders remain */}
+                  </motion.tr>
+                ))}
+              </tbody>
+            </motion.table>
+          </motion.div>
 
           {/* Availability Table */}
           <motion.div 
-  className="mb-4"
-  initial={{ opacity: 0, y: 20 }} 
-  whileInView={{ opacity: 1, y: 0 }} 
-  transition={{ duration: 0.6 }}
-  viewport={{ once: true, amount: 0.3 }} // ✅ Triggers when 30% is visible
->
-  <h2 className="text-xl font-semibold mb-1">General Availability</h2>
-  {renderAvailabilityTable()}
-</motion.div>
+            className="mb-4"
+            initial={{ opacity: 0, y: 20 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true, amount: 0.3 }} // ✅ Triggers when 30% is visible
+          >
+            <h2 className="text-xl font-semibold mb-1">General Availability</h2>
+            {renderAvailabilityTable()}
+          </motion.div>
          
 
- {/* Contact Information */}
-<motion.div 
-  className="mt-6 text-left"
-  initial={{ opacity: 0, y: 20 }} 
-  whileInView={{ opacity: 1, y: 0 }} 
-  transition={{ duration: 0.6 }} 
-  viewport={{ once: true, amount: 0.3 }} // ✅ Triggers when 30% is visible
->
-  <p className="text-gray-800 font-semibold">
-    Contact: <a href={`mailto:${contactEmail}`} className="text-teal-500 hover:underline font-normal">{contactEmail}</a>
-  </p>
-  <p className="text-gray-800 font-semibold mt-1">
-    Phone: <span className="font-normal">{contactNumber}</span>
-  </p>
-</motion.div>
+          {/* Contact Information */}
+          <motion.div 
+            className="mt-6 text-left"
+            initial={{ opacity: 0, y: 20 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.6 }} 
+            viewport={{ once: true, amount: 0.3 }} // ✅ Triggers when 30% is visible
+          >
+            <p className="text-gray-800 font-semibold">
+              Contact: <a href={`mailto:${tutorData.contactEmail}`} className="text-teal-500 hover:underline font-normal">{tutorData.contactEmail}</a>
+            </p>
+            <p className="text-gray-800 font-semibold mt-1">
+              Phone: <span className="font-normal">{tutorData.contactNumber}</span>
+            </p>
+          </motion.div>
 
-{/* ✅ Send Request Button - Themed & Navigates */}
-<motion.div 
-        className="mt-6 flex justify-center"
-        initial={{ opacity: 0, y: 20 }} 
-        whileInView={{ opacity: 1, y: 0 }} 
-        transition={{ duration: 0.6 }} 
-        viewport={{ once: true, amount: 0.3 }} 
-      >
-        <motion.button
-          onClick={handleSendRequest} // ✅ Call the function properly
-          className="bg-teal-500 text-white px-6 py-3 rounded-lg text-lg shadow-lg transition-all hover:bg-teal-600 hover:shadow-xl"
-          whileHover={{ scale: 1.05 }} // ✅ Slight hover effect
-          whileTap={{ scale: 0.95 }} // ✅ Slight shrink on click
-          transition={{ type: "spring", stiffness: 200, damping: 10 }} 
-        >
-          Send request to study
-        </motion.button>
-      </motion.div>
+          {/* ✅ Send Request Button - Themed & Navigates */}
+          <motion.div 
+            className="mt-6 flex justify-center"
+            initial={{ opacity: 0, y: 20 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.6 }} 
+            viewport={{ once: true, amount: 0.3 }} 
+          >
+            <motion.button
+              onClick={handleSendRequest} // ✅ Call the function properly
+              className="bg-teal-500 text-white px-6 py-3 rounded-lg text-lg shadow-lg transition-all hover:bg-teal-600 hover:shadow-xl"
+              whileHover={{ scale: 1.05 }} // ✅ Slight hover effect
+              whileTap={{ scale: 0.95 }} // ✅ Slight shrink on click
+              transition={{ type: "spring", stiffness: 200, damping: 10 }} 
+            >
+              Send request to study
+            </motion.button>
+          </motion.div>
 
         </div>
       </div>

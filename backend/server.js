@@ -4,13 +4,14 @@ import { connectDB } from "./config/db.js";
 import studentsRouter from './router/studentsRouter.js';
 import tutorsRouter from './router/tutorsRouter.js';
 import userRouter from './router/userRouter.js';
+import bookingsRouter from './router/bookingsRouter.js';
 import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
+//import path from 'path';
+//import { fileURLToPath } from 'url';
+//import fs from 'fs';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+//const __filename = fileURLToPath(import.meta.url);
+//const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -18,12 +19,12 @@ const PORT = process.env.PORT || 5000;
 const app = express();
 
 // Create upload directories if they don't exist
-const uploadDirs = ['uploads', 'uploads/profiles', 'uploads/cvs'];
-uploadDirs.forEach(dir => {
-    if (!fs.existsSync(dir)){
-        fs.mkdirSync(dir, { recursive: true });
-    }
-});
+// const uploadDirs = ['uploads', 'uploads/profiles', 'uploads/cvs'];
+// uploadDirs.forEach(dir => {
+//     if (!fs.existsSync(dir)){
+//         fs.mkdirSync(dir, { recursive: true });
+//     }
+// });
 
 // CORS configuration
 app.use(cors({
@@ -43,7 +44,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/students', studentsRouter);
 app.use('/api/tutors', tutorsRouter);
 app.use('/api/users', userRouter);
-
+app.use('/api/bookings', bookingsRouter);
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);

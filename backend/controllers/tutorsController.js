@@ -1,14 +1,14 @@
 import Tutor from "../models/tutorsModel.js";
 import Student from "../models/studentsModel.js";
 import { hashPassword } from "../config/utils.js";
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+//import fs from 'fs';
+//import path from 'path';
+//import { fileURLToPath } from 'url';
 import cloudinary from "../config/cloudinary.js";
 import { Readable } from 'stream';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+//const __filename = fileURLToPath(import.meta.url);
+//const __dirname = path.dirname(__filename);
 
 export const registerTutor = async (req, res) => {
     try {
@@ -62,7 +62,10 @@ export const registerTutor = async (req, res) => {
 export const getTutorProfile = async (req, res) => {
     try {
         const tutorId = req.user.id;
+        console.log("UserID", tutorId);
         const tutor = await Tutor.findById(tutorId).select('-password');
+
+        await Tutor.findById(tutorId).select('-password');
         
         if (!tutor) {
             return res.status(404).json({

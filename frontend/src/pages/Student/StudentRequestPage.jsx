@@ -3,24 +3,76 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import StudentNavbar from "../../Components/Student/StudentNavbar/StudentNavbar";
 import Footer from "../../Components/homeComponents/footer/Footer";
-import studentProfileData from "../../mockData/Student/StudentProfileData";
+// import studentProfileData from "../../mockData/Student/StudentProfileData";
 import ThemedButton from "../../Components/Student/StudentRequest/ThemedButton";
 import CustomDropdown from "../../Components/Student/StudentRequest/CustomDropdown";
+import { getTutorProfile } from "../../handle/student";
+import { useParams } from "react-router-dom";
 
 const StudentRequestPage = () => {
-  const navigate = useNavigate();
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  
 
-  const [formData, setFormData] = useState({
-    tutorName: studentProfileData.fullName, 
-    subject: studentProfileData.subjectsOffered.length ? studentProfileData.subjectsOffered[0].subject : "",
-    message: "",
-    time: "",
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [tutorData, setTutorData] = useState({
+      fullName: '',
+      institution: '',
+      qualification: '',
+      rating: 0,
+      reviewsCount: 0,
+      aboutMe: '',
+      aboutMySession: '',
+      cvDownload: '',
+      availability: {},
+      contactEmail: '',
+      contactNumber: '',
+      profileImageUrl: '',
+      subjectsOffered: [],
+      reviews: []
   });
 
+  useEffect(() => {
+      const fetchTutorData = async () => {
+          try {
+              const result = await getTutorProfile(id);
+              if (result.success) {
+                  setTutorData(result.tutor);
+              } else {
+                console.error(result.error || 'Failed to fetch tutor data');
+              }
+          } 
+          catch (err) {
+              console.error('Error:', err);
+          };
+        }
+
+      fetchTutorData();
+  }, [id]);
+
+  console.log("Tutor Data", tutorData.fullName);
+
+  const [formData, setFormData] = useState({
+      tutorName: "",
+      subject: "",
+      message: "",
+      time: "",
+  });
+
+  useEffect(() => {
+      setFormData({
+          tutorName: tutorData.fullName,
+          subject: tutorData.subjectsOffered.length ? tutorData.subjectsOffered[0].subject : "",
+          message: "",
+          time: "",
+      });
+  }, [tutorData]);
+
+  console.log("Form Data", formData);
+
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
@@ -37,7 +89,7 @@ const StudentRequestPage = () => {
     setIsSubmitting(true);
 
     setTimeout(() => {
-      navigate("/student-view-tutor-profile", { replace: true });
+      navigate(`/tutor-profile/${id}`, { replace: true });
     }, 1500);
   };
 
@@ -86,7 +138,7 @@ const StudentRequestPage = () => {
               name="subject"
               value={formData.subject} 
               onChange={handleChange}
-              options={studentProfileData.subjectsOffered.map(subject => ({
+              options={tutorData.subjectsOffered.map(subject => ({
                 value: subject.subject, 
                 label: `${subject.subject} - ${subject.topic}`
               }))}

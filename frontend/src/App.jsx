@@ -57,11 +57,12 @@ function App() {
           path="/student-notifications"
           element={<StudentNotificationsPage />}
         />
-        <Route path="/student-request" element={<StudentRequestPage />} />
-        <Route
+        <Route path="/student-request/:id" element={<StudentRequestPage />} />
+        {/* <Route
           path="/student-view-tutor-profile"
           element={<StudentViewTutorPage />}
-        />
+        /> */}
+        <Route path="/tutor-profile/:id" element={<StudentViewTutorPage/>} />
         <Route path="/student-profile" element={<StudentProfile />} />
         <Route path="/student-edit-profile" element={<EditStudentProfile />} />
         {/* 📌 Tutor Pages (Navbar will be handled inside the pages themselves) */}
