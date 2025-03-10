@@ -54,7 +54,7 @@ const NotificationCard = ({ notification, onLeaveReview, onViewResponse }) => (
 
 NotificationCard.propTypes = {
   notification: PropTypes.shape({
-    id: PropTypes.string.isRequired,
+    _id: PropTypes.string.isRequired,
     tutorImage: PropTypes.string,
     tutorName: PropTypes.string.isRequired,
     subject: PropTypes.string.isRequired,

@@ -31,7 +31,7 @@ const StudentNotificationsPage = () => {
         if (response.data.notification && response.data.notification.length > 0) {
           const sortedNotifications = [...response.data.notification].sort((a, b) => {
             return new Date(b.timestamp || b.createdAt) - new Date(a.timestamp || a.createdAt);
-          });
+          })
           setNotifications(sortedNotifications);
         }
       } else {
@@ -62,7 +62,7 @@ const StudentNotificationsPage = () => {
     console.log("✅ Review Submitted:", review);
     setNotifications((prev) => prev.filter((notif) => notif.tutorName !== review.tutorName));
   };
-
+  console.log(notifications);
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <StudentNavbar />
@@ -76,8 +76,9 @@ const StudentNotificationsPage = () => {
               <p className="text-gray-500 italic text-center">No notifications.</p>
             ) : (
               notifications.map((notification) => (
+                
                 <NotificationCard
-                  key={notification.id}
+                  key={notification._id}
                   notification={notification}
                   onLeaveReview={handleLeaveReview}
                   onViewResponse={handleViewResponse}
