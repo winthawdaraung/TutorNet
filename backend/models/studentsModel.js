@@ -4,6 +4,7 @@ const notificationSchema = new mongoose.Schema({
     id: { type: String, required: true, unique: true },
     tutorName: { type: String, required: true },
     tutorImage: { type: String, required: true },
+    tutorId: { type: String, required: true},
     message: { type: String, default: "" },
     subject: { type: String, required: true },
     date: { type: String, required: true }, // Kept as String since it's in DD/MM/YYYY format

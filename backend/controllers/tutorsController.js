@@ -475,7 +475,7 @@ export const acceptStudentRequest = async (req, res) => {
                 $push: {
                     notification: {
                         _id: new mongoose.Types.ObjectId(),
-                        tutorId,
+                        tutorId: tutorId,
                         tutorName: tutor.fullName,
                         tutorImage: tutor.profileImageUrl,
                         message: formData.reply,
