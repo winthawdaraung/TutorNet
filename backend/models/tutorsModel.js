@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 import { notificationSchema } from "./notificationModel.js";
+//import { reviewSchema } from "./reviewModel.js";
 
 const reviewSchema = new mongoose.Schema({
-  tutorId: { type: String, required: true },
-  studentId: { type: String, required: true },
+  tutorId: { type: mongoose.Schema.Types.ObjectId, required: true },
+  studentId: { type: mongoose.Schema.Types.ObjectId, required: true },
   rating: { type: Number, required: true },
   comment: { type: String, required: true },
 }, { timestamps: true });

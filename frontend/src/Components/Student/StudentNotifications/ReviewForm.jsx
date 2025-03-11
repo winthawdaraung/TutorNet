@@ -2,31 +2,76 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import PropTypes from "prop-types";
 import { FaStar } from "react-icons/fa";
+import { submitReview } from "../../../handle/review";
+//import StudentNotificationsPage from "../../../pages/Student/StudentNotificationsPage";
 
-const ReviewForm = ({ notification, onClose, onSubmit }) => {
+const ReviewForm = ({ notification, onClose,  onReviewSubmitted, token, studentId, tutorId }) => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  //const [notification] = StudentNotificationsPage();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccessMessage("");
+    setIsLoading(true);
+
     if (!rating || !comment) {
-      alert("⚠️ Please provide a rating and a comment.");
+      setError("⚠️ Please provide a rating and a comment.");
+      setIsLoading(false);
       return;
     }
 
+    if (!notification?.tutorId) {
+      setError("Tutor information is missing. Unable to submit review.");
+      setIsLoading(false);
+      return;
+    }
+
+
+    const reviewData = {
+      tutorId: notification.tutorId, // This needs to exist
+      rating: rating,
+      comment: comment
+    };
+
     // ✅ Get Current Date & Time
-    const reviewDate = new Date().toISOString(); // e.g., "2024-02-26T14:30:00.000Z"
-
-    onSubmit({ 
-      tutorName: notification.tutorName, 
-      rating, 
-      comment,
-      date: reviewDate // ✅ Send Date to Backend
-    });
-
-    onClose();
+    //const reviewDate = new Date().toISOString(); // e.g., "2024-02-26T14:30:00.000Z"
+    try {
+      const result = await submitReview(reviewData);
+      if (result.success) {
+        onReviewSubmitted({
+          tutorName: notification.tutorName, 
+          rating, 
+          comment,
+          date: new Date().toISOString(), // ✅ Send Date to Backend
+        }); // Refresh the review list
+        setSuccessMessage("Review submitted successfully!");
+        onClose();
+    } else {
+      // Handle the error returned by submitReview
+      setError(result.error || "Failed to submit review. Please try again.");
+    }
+  } catch (error) {
+      console.error("Error submitting review:", error);
+      setError("Failed to submit review. Please try again later.");
+    } finally{
+      setIsLoading(false);
+    }
   };
+  //   onSubmit({ 
+  //     tutorName: notification.tutorName, 
+  //     rating, 
+  //     comment,
+  //     date: reviewDate // ✅ Send Date to Backend
+  //   });
+
+  //   onClose();
+  // };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center px-4">
@@ -39,6 +84,9 @@ const ReviewForm = ({ notification, onClose, onSubmit }) => {
         <h2 className="text-2xl font-semibold text-center">
           Leave a Review for <span className="text-teal-500">{notification.tutorName}</span>
         </h2>
+
+        {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+        {successMessage && <p className="text-green-500 text-center mt-2">{successMessage}</p>}
 
         {/* ⭐ Dynamic Star Rating - Hover & Click Effect */}
         <div className="flex justify-center my-4">
@@ -74,12 +122,14 @@ const ReviewForm = ({ notification, onClose, onSubmit }) => {
           <button
             onClick={onClose}
             className="bg-gray-400 text-white px-5 py-2 rounded-lg transition hover:bg-gray-500 shadow-md"
+            disabled={isLoading}
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             className="bg-teal-500 text-white px-5 py-2 rounded-lg transition hover:bg-teal-600 shadow-md"
+            dusabled={isLoading}
           >
             Submit Review
           </button>
@@ -92,7 +142,8 @@ const ReviewForm = ({ notification, onClose, onSubmit }) => {
 ReviewForm.propTypes = {
   notification: PropTypes.object.isRequired,
   onClose: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
+  onReviewSubmitted: PropTypes.func.isRequired,
+  token: PropTypes.string.isRequired,
 };
 
 export default ReviewForm;

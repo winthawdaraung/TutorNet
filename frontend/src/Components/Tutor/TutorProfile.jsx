@@ -2,11 +2,13 @@ import { useNavigate } from "react-router-dom";
 import tutorProfileDataMock from "../../mockData/TutorProfileData";
 import defaultProfile from "../../assets/tutor/defaultProfile.png";
 import { getTutorProfile } from "../../handle/tutor";
+import { getTutorReviews } from "../../handle/review";
 import { useEffect, useState } from "react";
 
 function TutorProfile() {
   const navigate = useNavigate();
   const [tutorProfileData, setTutorProfileData] = useState(tutorProfileDataMock);
+  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -14,6 +16,17 @@ function TutorProfile() {
         const response = await getTutorProfile();
         if (response.success) {
           setTutorProfileData(response.data);
+
+          // Fetch tutor reviews using the tutor's ID
+          if (response.data && response.data._id) {
+            try {
+              const reviewsData = await getTutorReviews(response.data._id);
+              setReviews(reviewsData || []);
+            } catch (error) {
+              console.error("Error fetching reviews:", error);
+              setReviews([]);
+            }
+          }
         } else {
           console.error("Failed to fetch tutor profile:", response.error);
           setTutorProfileData(tutorProfileDataMock);
@@ -23,7 +36,7 @@ function TutorProfile() {
         setTutorProfileData(tutorProfileDataMock);
       }
     };
-
+  
     fetchProfile();
   }, []);
 

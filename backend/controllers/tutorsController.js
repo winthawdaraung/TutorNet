@@ -276,7 +276,8 @@ export const searchTutors = async (req, res) => {
         if (query) {
             searchQuery.$or = [
                 { fullName: { $regex: new RegExp(query, "i") } },
-                { "subjectsOffered.subject": { $regex: new RegExp(query, "i") } }
+                { "subjectsOffered.subject": { $regex: new RegExp(query, "i") } },
+                { institution: { $regex: new RegExp(query, "i") } }
             ];
         }
 

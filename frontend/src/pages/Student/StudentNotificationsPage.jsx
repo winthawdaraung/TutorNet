@@ -11,14 +11,10 @@ const StudentNotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [reviewNotification, setReviewNotification] = useState(null);
+  const [token, setToken] = useState("");
+  //const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // // Sort mock data initially if needed
-    // const sortedMockNotifications = [...studentNotifications].sort((a, b) => {
-    //   return new Date(b.timestamp || b.createdAt) - new Date(a.timestamp || a.createdAt);
-    // });
-    // setNotifications(sortedMockNotifications);
-    
     fetchProfile();
   }, []);
 
@@ -26,6 +22,7 @@ const StudentNotificationsPage = () => {
     try {
       const response = await getStudentProfile();
       if (response.success) {
+        setToken(response.data.token || "");
         
         // Sort notifications by timestamp (newest first)
         if (response.data.notification && response.data.notification.length > 0) {
@@ -39,7 +36,7 @@ const StudentNotificationsPage = () => {
       }
     } catch (error) {
       console.error("Error fetching student profile:", error);
-    }
+    } 
   };
 
   const handleViewResponse = (notification) => {
@@ -58,9 +55,10 @@ const StudentNotificationsPage = () => {
     setReviewNotification(null);
   };
 
-  const submitReview = (review) => {
-    console.log("✅ Review Submitted:", review);
-    setNotifications((prev) => prev.filter((notif) => notif.tutorName !== review.tutorName));
+  const submitReview = (reviewData) => {
+    console.log("✅ Review Submitted:", reviewData);
+    //setNotifications((prev) => prev.filter((notif) => notif.tutorName !== reviewData.tutorName));
+      setNotifications((prev) => prev.filter((notif) => notif.tutorName !== reviewData.tutorName));
   };
 
   return (
@@ -77,7 +75,7 @@ const StudentNotificationsPage = () => {
             ) : (
               notifications.map((notification) => (
                 <NotificationCard
-                  key={notification.id}
+                  key={notification._id}
                   notification={notification}
                   onLeaveReview={handleLeaveReview}
                   onViewResponse={handleViewResponse}
@@ -89,7 +87,7 @@ const StudentNotificationsPage = () => {
       </main>
 
       {selectedNotification && <NotificationPopup notification={selectedNotification} onClose={closePopup} />}
-      {reviewNotification && <ReviewForm notification={reviewNotification} onClose={closeReview} onSubmit={submitReview} />}
+      {reviewNotification && <ReviewForm notification={reviewNotification} onClose={closeReview} onReviewSubmitted={submitReview} token={token} />}
   
       <Footer />
     </div>

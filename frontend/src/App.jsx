@@ -23,6 +23,7 @@ import EditStudentProfile from "./pages/Student/EditStudentProfile";
 import TutormyProfilePage from "./pages/Tutor/Tutormyprofilepage";
 import TutorEditProfile from "./pages/Tutor/Tutoreditmyprofilepage";
 import TutorNotificationPage from "./pages/Tutor/Tutornotificationpage";
+import ReviewForm from "./Components/Student/StudentNotifications/ReviewForm";
 
 
 function App() {
@@ -62,6 +63,7 @@ function App() {
           path="/student-view-tutor-profile"
           element={<StudentViewTutorPage />}
         /> */}
+        <Route path="/tutor-reviews/:id" element={<ReviewForm/>}/>
         <Route path="/tutor-profile/:id" element={<StudentViewTutorPage />} />
         <Route path="/student-profile" element={<StudentProfile />} />
         <Route path="/student-edit-profile" element={<EditStudentProfile />} />

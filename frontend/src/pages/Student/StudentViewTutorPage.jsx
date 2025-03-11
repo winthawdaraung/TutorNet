@@ -4,6 +4,7 @@ import Footer from "../../Components/homeComponents/footer/Footer";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { getTutorProfile } from "../../handle/student";
+import { getTutorReviews } from "../../handle/review";
 import { useState, useEffect } from "react";
 
 function StudentViewTutorPage() {  
@@ -25,6 +26,7 @@ function StudentViewTutorPage() {
     subjectsOffered: [],
     reviews: []
   });
+  //const [reviews, setReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -34,8 +36,18 @@ function StudentViewTutorPage() {
         const result = await getTutorProfile(id);
         if (result.success) {
           setTutorData(result.tutor);
+
+          // Fetch recent reviews (just a few for preview)
+        const reviewResult = await getTutorReviews(id);
+        if (reviewResult.success) {
+          setTutorData(prevData => ({
+            ...prevData,
+            ...result.tutor,
+            reviews: reviewResult.success ? reviewResult.reviews.slice(0, 3) : prevData.reviews
+          }));
         } else {
-          setError(result.error || 'Failed to fetch tutor data');
+          setError('Failed to fetch reviews');
+        }
         }
       } catch (err) {
         setError('Error fetching tutor data');
@@ -149,9 +161,9 @@ function StudentViewTutorPage() {
             }}
             viewport={{ once: true, amount: 0.3 }}
           >
-            {tutorData.reviews.map((review) => (
+            {tutorData.reviews.map((review, index) => (
               <motion.div
-                key={review.id}
+                key={review.id || index}
                 className="border p-4 rounded-lg shadow-sm bg-gray-50"
                 whileHover={{ scale: 1.02, boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)" }} // ✅ Slight hover effect
                 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
