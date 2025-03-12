@@ -4,6 +4,7 @@ import { connectDB } from "./config/db.js";
 import studentsRouter from './router/studentsRouter.js';
 import tutorsRouter from './router/tutorsRouter.js';
 import userRouter from './router/userRouter.js';
+import reviewsRouter from './router/reviewsRouter.js';
 import cors from 'cors';
 
 
@@ -28,6 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/students', studentsRouter);
 app.use('/api/tutors', tutorsRouter);
 app.use('/api/users', userRouter);
+app.use('/api/reviews', reviewsRouter);
 
 
 // Error handling middleware

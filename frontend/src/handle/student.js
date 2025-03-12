@@ -1,6 +1,6 @@
 export const registerStudent = async (formData) => {
     try {
-        const response = await fetch(`/api/students/register`, {
+        const response = await fetch(`http://localhost:5000/api/students/register`, {
             method: "POST",
             headers: { 
                 "Content-Type": "application/json"
@@ -34,7 +34,7 @@ export const registerStudent = async (formData) => {
 export const getStudentProfile = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('/api/students/profile', {
+        const response = await fetch('http://localhost:5173/api/students/profile', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ export const getStudentProfile = async () => {
         }
 
         const data = await response.json();
-        console.log('Profile data:', data); // Debug log
+        console.log('Profile data:', data ); // Debug log
 
         return { 
             success: true, 

@@ -36,7 +36,12 @@ const StudentSearchResultPage = () => {
     console.log("Fetching tutors for:", query, "Page:", page);
     try{
       const response = await axios.get('http://localhost:5000/api/tutors/search', {
-      params: {query, page, limit: tutorsPerPage},
+      params: {
+        query, 
+        page, 
+        limit: tutorsPerPage,
+        sort: "ratingAndReviews"
+      },
     });
 
     setResults(response.data.tutors);

@@ -3,7 +3,7 @@ import { notificationSchema } from "./notificationModel.js";
 
 const reviewSchema = new mongoose.Schema({
   tutorId: { type: String, required: true },
-  studentId: { type: String, required: true },
+  studentName: { type: String, required: true },
   rating: { type: Number, required: true },
   comment: { type: String, required: true },
 }, { timestamps: true });

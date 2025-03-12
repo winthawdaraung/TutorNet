@@ -240,32 +240,10 @@ export const updateTutorProfile = async (req, res) => {
     }
 };
 
-//Search Tutor now using Tutor Name!
-
-// export const searchTutors = async (req, res) => {
-//     try {
-//         const { subject, sortByRating } = req.query;
-//         let query = {};
-
-//         if (subject) {
-//             query.subjects = { $regex: new RegExp(subject, "i") }; // Case-insensitive search
-//         }
-
-//         let tutors = await Tutor.find(query);
-
-//         /*if (sortByRating === "true") {
-//             tutors = tutors.sort((a, b) => b.rating - a.rating);
-//         }*/
-
-//         res.json(tutors);
-//     } catch (error) {
-//         res.status(500).json({ message: "Server Error", error });
-//     }
-// };
-
+// Searching for tutors with filters and show result according to rating, view count, and popularity
 export const searchTutors = async (req, res) => {
     try {
-        let { query, subject, sortByRating, price, experience, page=1, limit = 3 } = req.query;
+        let { query, subject, sort, price, experience, page=1, limit = 3 } = req.query;
 
         page = parseInt(page) || 1;
         limit = parseInt(limit) || 3;
@@ -276,7 +254,8 @@ export const searchTutors = async (req, res) => {
         if (query) {
             searchQuery.$or = [
                 { fullName: { $regex: new RegExp(query, "i") } },
-                { "subjectsOffered.subject": { $regex: new RegExp(query, "i") } }
+                { "subjectsOffered.subject": { $regex: new RegExp(query, "i") } },
+                { institution: { $regex: new RegExp(query, "i") } }
             ];
         }
 
@@ -300,34 +279,70 @@ export const searchTutors = async (req, res) => {
             searchQuery.experience = { $gte: parseInt(experience) };
         }
 
-         // sort by rating
-        const sortOptions = sortByRating === "true" ?  { rating: -1 } : {};
+        // For most cases, use aggregation to have more control over sorting
+        let pipeline = [
+            { $match: searchQuery },
+            { 
+                $project: {
+                    _id: 1,
+                    fullName: 1,
+                    subjectsOffered: 1,
+                    institution: 1,
+                    experience: 1,
+                    priceRate: 1,
+                    rating: { $ifNull: ["$rating", 0] },
+                    reviewsCount: { $ifNull: ["$reviewsCount", 0] },
+                    viewCount: { $ifNull: ["$viewCount", 0] },
+                    profileImageUrl: 1,
+                    createdAt: 1
+                }
+            }
+        ];
 
-        // fetch paginated tutors
-        const tutors = await Tutor.find(searchQuery)
-            .select('fullName subjectsOffered institution experience priceRate rating reviewsCount profileImageUrl')
-            .sort(sortOptions) // sort by rating
-            .skip((page - 1) * limit) // skip previous pages
-            .limit(limit); // limit results per page
+        // Apply different sorting strategies based on the sort parameter
+        if (sort === "rating") {
+            // Sort by rating first, then by reviewsCount for entries with the same rating
+            pipeline.push({ 
+                $sort: { 
+                    rating: -1,           // Primary sort: Higher ratings first
+                    reviewsCount: -1      // Secondary sort: More reviews first (when ratings are equal)
+                } 
+            });
+        } else if (sort === "reviewCount") {
+            pipeline.push({ 
+                $sort: { 
+                    reviewCount: -1,
+                    rating: -1 
+                } 
+            });
+        } else if (sort === "ratingAndReviews") {
+            // Combined sorting approach that balances both rating and review counts
+            pipeline.push({ 
+                $addFields: {
+                    weightedScore: { 
+                        $add: [
+                            { $multiply: ["$rating", 0.7] },  // 70% weight to rating
+                            { $multiply: [{ $divide: ["$reviewsCount", { $add: [{ $max: ["$reviewsCount", 1] }, 10] }] }, 3] }  // 30% weight to reviews, normalized
+                        ]
+                    }
+                }
+            });
+            pipeline.push({ $sort: { weightedScore: -1 } });
+        } else {
+            // Default sort by most recent
+            pipeline.push({ $sort: { createdAt: -1 } });
+        }
 
-        const totalTutors = await Tutor.countDocuments(searchQuery); //get total count for pagination
+        // Add pagination to the pipeline
+        pipeline.push({ $skip: (page - 1) * limit });
+        pipeline.push({ $limit: limit });
 
-       
+        // Execute the aggregation
+        const tutors = await Tutor.aggregate(pipeline);
+        const totalTutors = await Tutor.countDocuments(searchQuery);
 
-        // Transform the data to match the frontend expectations
-        const formattedTutors = tutors.map(tutor => ({
-            id: tutor._id,
-            name: tutor.fullName,
-            subject: tutor.subjectsOffered.length > 0 
-                ? tutor.subjectsOffered.map(s => s.subject).join(', ') 
-                : 'No subjects listed',
-            university: tutor.institution || 'Not specified',
-            experience: tutor.experience ? `${tutor.experience} years` : 'Not specified',
-            price: tutor.priceRate || 0,
-            image: tutor.profileImageUrl || 'https://via.placeholder.com/150',
-            rating: tutor.rating || 0,
-            reviewsCount: tutor.reviewsCount || 0
-        }));
+        // Format the tutors data for the response
+        const formattedTutors = tutors.map(formatTutorData);
 
         res.status(200).json({
             tutors: formattedTutors,
@@ -342,6 +357,24 @@ export const searchTutors = async (req, res) => {
         });
     }
 };
+
+// Helper function to format tutor data consistently
+function formatTutorData(tutor) {
+    return {
+        id: tutor._id,
+        name: tutor.fullName,
+        subject: tutor.subjectsOffered && tutor.subjectsOffered.length > 0 
+            ? tutor.subjectsOffered.map(s => s.subject).join(', ') 
+            : 'No subjects listed',
+        university: tutor.institution || 'Not specified',
+        experience: tutor.experience ? `${tutor.experience} years` : 'Not specified',
+        price: tutor.priceRate || 0,
+        image: tutor.profileImageUrl || 'https://via.placeholder.com/150',
+        rating: tutor.rating || 0,
+        reviewsCount: tutor.reviewsCount || 0,
+        viewCount: tutor.viewCount || 0
+    };
+}
 
 export const getTutorDetails = async (req, res) => {
     try {

@@ -172,3 +172,35 @@ export const acceptStudentRequest = async (requestId, formData) =>{
         return { success: false, error: error.message };
       }
 }
+
+export const getTutorReviews = async (tutorId) => {
+    try {
+        const response = await fetch(`/api/reviews/tutor/${tutorId}`, {
+            method: 'GET',
+            headers: { 
+                "Content-Type": "application/json"
+            },
+            credentials: 'include'
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error fetching reviews:', errorText);
+            return { success: false, error: 'Failed to fetch reviews' };
+        }
+
+        const data = await response.json();
+        console.log("Review data received:", data); // Add this for debug log
+        return { 
+            success: true, 
+            data: {
+                reviews: data.reviews || [],
+                averageRating: data.averageRating || 0,
+                reviewCount: data.reviewCount || 0
+            }
+        };
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+        return { success: false, error: 'Failed to fetch reviews' };
+    }
+};

@@ -1,19 +1,45 @@
 import { useNavigate } from "react-router-dom";
 import tutorProfileDataMock from "../../mockData/TutorProfileData";
 import defaultProfile from "../../assets/tutor/defaultProfile.png";
-import { getTutorProfile } from "../../handle/tutor";
+import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { getTutorProfile, getTutorReviews } from "../../handle/tutor";
 import { useEffect, useState } from "react";
 
 function TutorProfile() {
   const navigate = useNavigate();
   const [tutorProfileData, setTutorProfileData] = useState(tutorProfileDataMock);
+  const [reviews, setReviews] = useState([]);  // State for reviews
+  const [averageRating, setAverageRating] = useState(0); // State for average rating
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const response = await getTutorProfile();
+        console.log("Profile response:", response);
         if (response.success) {
           setTutorProfileData(response.data);
+          
+          // Only try to fetch reviews if we have a valid tutorId
+          const tutorId = response.data?._id;
+          console.log("Tutor ID for reviews:", tutorId);
+          if (tutorId) {
+            try {
+              const responseReviews = await getTutorReviews(tutorId);
+              console.log("Reviews response:", responseReviews); // Debug log
+              if (responseReviews.success && responseReviews.data) {
+                console.log("Setting reviews:", responseReviews.data.reviews);
+                setReviews(responseReviews.data.reviews || []);
+                setAverageRating(responseReviews.data.averageRating || 0);
+              } else {
+                console.error("Failed to fetch reviews:", responseReviews.error);
+              }
+            } catch (reviewError) {
+              console.error("Error fetching tutor reviews:", reviewError);
+            }
+          } else {
+            console.error("Tutor ID is not available.");
+          }
         } else {
           console.error("Failed to fetch tutor profile:", response.error);
           setTutorProfileData(tutorProfileDataMock);
@@ -57,13 +83,46 @@ function TutorProfile() {
     window.scrollTo(0, 0); // เลื่อนขึ้นบนสุดของหน้า
   };
 
-  // Star rating renderer
-  const renderStars = (count) => {
-    return [...Array(count)].map((_, i) => (
-      <span key={i} className="text-yellow-500">
-        ★
-      </span>
-    ));
+  // ✅ Star rating renderer with animation
+  const renderStars = (rating) => {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 !== 0;
+      
+    return (
+      <div className="flex">
+        {[...Array(fullStars)].map((_, i) => (
+          <motion.span 
+            key={i} 
+            initial={{ opacity: 0, scale: 0.5 }} 
+            animate={{ opacity: 1, scale: 1 }} 
+            transition={{ duration: 0.3, delay: i * 0.1 }} // Each star appears sequentially
+          >
+            <FaStar className="text-yellow-500" />
+          </motion.span>
+        ))}
+          
+        {halfStar && (
+          <motion.span 
+            initial={{ opacity: 0, scale: 0.5 }} 
+            animate={{ opacity: 1, scale: 1 }} 
+            transition={{ duration: 0.3, delay: fullStars * 0.1 }} // Half star fades in after full stars
+          >
+            <FaStarHalfAlt className="text-yellow-500" />
+          </motion.span>
+        )}
+  
+        {[...Array(5 - fullStars - (halfStar ? 1 : 0))].map((_, i) => (
+          <motion.span 
+            key={i + fullStars + 1} 
+            initial={{ opacity: 0, scale: 0.5 }} 
+            animate={{ opacity: 1, scale: 1 }} 
+            transition={{ duration: 0.3, delay: (fullStars + (halfStar ? 1 : 0)) * 0.1 + i * 0.1 }} // Empty stars animate in sequence
+          >
+            <FaRegStar className="text-yellow-500" />
+          </motion.span>
+        ))}
+      </div>
+    );
   };
 
   // Function to render the availability table
@@ -136,9 +195,9 @@ function TutorProfile() {
                 {qualification}, {institution}
               </p>
               <div className="flex items-center mt-2">
-                <div className="mr-2">{renderStars(rating)}</div>
+                <div className="mr-2">{renderStars(averageRating)}</div>
                 <span className="text-gray-600 text-sm">
-                  ({reviewsCount} reviews)
+                  ({reviews.length} reviews)
                 </span>
               </div>
               <div className="mt-2">
@@ -153,6 +212,30 @@ function TutorProfile() {
           <div className="mb-4">
             <h2 className="text-xl font-semibold mb-1">About me</h2>
             <p className="text-gray-700">{aboutMe}</p>
+          </div>
+          {/* Reviews Section */}
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold mb-1">Reviews</h2>
+            {reviews && reviews.length > 0 ? (
+              <div>
+                {reviews
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) //sort by date the latest review first
+                .slice(0,3) //only the first 3 reviews
+                .map((review, index) => (
+                  <div key={index} className="border-b py-2">
+                    <div className="flex items-center">
+                      <span className="font-bold">
+                        {review.studentId && review.studentId.fullName ? review.studentId.fullName : "Anonymous"}
+                      </span>
+                      <div className="ml-2">{renderStars(review.rating)}</div>
+                    </div>
+                    <p className="text-gray-700">{review.comment}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>No reviews yet.</p>
+            )}
           </div>
 
           {/* About My Session */}

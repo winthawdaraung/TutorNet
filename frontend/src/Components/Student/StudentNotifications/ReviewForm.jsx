@@ -19,7 +19,7 @@ const ReviewForm = ({ notification, onClose, onSubmit }) => {
     const reviewDate = new Date().toISOString(); // e.g., "2024-02-26T14:30:00.000Z"
 
     onSubmit({ 
-      tutorName: notification.tutorName, 
+      tutorId: notification.tutorId, 
       rating, 
       comment,
       date: reviewDate // ✅ Send Date to Backend

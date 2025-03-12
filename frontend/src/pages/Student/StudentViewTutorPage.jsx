@@ -3,7 +3,8 @@ import StudentNavbar from "../../Components/Student/StudentNavbar/StudentNavbar"
 import Footer from "../../Components/homeComponents/footer/Footer";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { getTutorProfile } from "../../handle/student";
+import { getTutorProfile, } from "../../handle/student";
+import { getTutorReviews } from "../../handle/tutor";
 import { useState, useEffect } from "react";
 
 function StudentViewTutorPage() {  
@@ -25,6 +26,9 @@ function StudentViewTutorPage() {
     subjectsOffered: [],
     reviews: []
   });
+  const [reviews, setReviews] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -36,6 +40,16 @@ function StudentViewTutorPage() {
           setTutorData(result.tutor);
         } else {
           setError(result.error || 'Failed to fetch tutor data');
+        }
+
+        // Fetch reviews separately
+        const reviewsResult = await getTutorReviews(id);
+        if (reviewsResult.success) {
+          setReviews(reviewsResult.data.reviews);
+          setAverageRating(reviewsResult.data.averageRating);
+          setReviewCount(reviewsResult.data.reviewCount);
+        } else {
+          console.error('Failed to fetch reviews:', reviewsResult.error);
         }
       } catch (err) {
         setError('Error fetching tutor data');
@@ -138,7 +152,7 @@ function StudentViewTutorPage() {
         viewport={{ once: true, amount: 0.3 }} // ✅ Triggers when 30% is visible
       >
         <h2 className="text-xl font-semibold mb-4">Ratings & Reviews</h2>
-        {tutorData.reviews && tutorData.reviews.length > 0 ? (
+        {reviews && reviews.length > 0 ? (
           <motion.div 
             className="space-y-4"
             initial="hidden"
@@ -149,7 +163,10 @@ function StudentViewTutorPage() {
             }}
             viewport={{ once: true, amount: 0.3 }}
           >
-            {tutorData.reviews.map((review) => (
+            {reviews
+            .sort((a, b) => new Date(b.date) - new Date(a.date)) //Sort reviews by date, the latest first reviews
+            .slice(0,3) //only 3 first reviews
+            .map((review) => (
               <motion.div
                 key={review.id}
                 className="border p-4 rounded-lg shadow-sm bg-gray-50"
@@ -272,8 +289,8 @@ function StudentViewTutorPage() {
               <h1 className="text-3xl font-bold">{tutorData.fullName}</h1>
               <p className="text-gray-600">{tutorData.qualification}, {tutorData.institution}</p>
               <div className="flex items-center mt-2">
-                <div className="mr-2">{renderStars(tutorData.rating)}</div>
-                <span className="text-gray-600 text-sm">({tutorData.reviewsCount} reviews)</span>
+                <div className="mr-2">{renderStars(averageRating)}</div>
+                <span className="text-gray-600 text-sm">({reviewCount} reviews)</span>
               </div>
             </div>
           </div>

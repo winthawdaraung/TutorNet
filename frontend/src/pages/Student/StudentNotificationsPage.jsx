@@ -11,6 +11,7 @@ const StudentNotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [reviewNotification, setReviewNotification] = useState(null);
+  const [studentId, setStudentId] = useState(null);
 
   useEffect(() => {
     // // Sort mock data initially if needed
@@ -26,6 +27,7 @@ const StudentNotificationsPage = () => {
     try {
       const response = await getStudentProfile();
       if (response.success) {
+        setStudentId(response.data._id);
         
         // Sort notifications by timestamp (newest first)
         if (response.data.notification && response.data.notification.length > 0) {
@@ -58,11 +60,48 @@ const StudentNotificationsPage = () => {
     setReviewNotification(null);
   };
 
-  const submitReview = (review) => {
-    console.log("✅ Review Submitted:", review);
-    setNotifications((prev) => prev.filter((notif) => notif.tutorName !== review.tutorName));
+  const submitReview = async (review) => {
+    if (!studentId) {
+      console.error("Student ID not found.");
+      return;
+    }
+
+    // Ensure all required fields are present
+  if (!review.tutorId || !review.rating || !review.comment) {
+    console.error("Missing required review fields.", review);
+    return;
+  }
+
+  const reviewData = {
+    studentId, // Include studentId
+    tutorId: review.tutorId,
+    rating: review.rating,
+    comment: review.comment,
   };
-  console.log(notifications);
+
+  console.log("Sending review:", reviewData); //  Log data before sending
+
+    try {
+      const response = await fetch("/api/reviews/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(reviewData), // Added studentId to review
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        console.log("✅ Review Submitted:", data);
+        setNotifications((prev) => prev.filter((notif) => notif.tutorId !== review.tutorId));
+      } else {
+        console.error("Error submitting review:", data.error);
+      }
+    } catch (error) {
+      console.error("Error submitting review:", error);
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <StudentNavbar />
