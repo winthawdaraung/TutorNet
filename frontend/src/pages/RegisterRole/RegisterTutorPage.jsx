@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { registerTutor } from "../../handle/tutor";
 import { FaEnvelope, FaLock, FaChalkboardTeacher, FaUniversity, FaBook, FaClock } from "react-icons/fa";
 
 const RegisterTutorPage = () => {
@@ -8,28 +9,49 @@ const RegisterTutorPage = () => {
     fullName: "",
     email: "",
     password: "",
-    university: "",
-    subject: "",       // ✅ Added Subject
-    experience: "",    // ✅ Added Experience (Years)
+    institution: "",
+    subjectsOffered: [],
+    experience: 0,
   });
 
   const [acceptTerms, setAcceptTerms] = useState(false);
-  const [setShowTerms] = useState(false);
-  const [setShowAlert] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  // const [setShowAlert] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!acceptTerms) {
-      setShowAlert(true);
+      // setShowAlert(true);
+      setError("Please accept the Terms & Conditions.");
       return;
     }
-    alert(`Tutor Registered: ${JSON.stringify(formData)}`);
-    navigate("/login");
+
+    const formattedData = {
+      ...formData,
+      // subjectsOffered: formData.subject ? [formData.subject] : [],
+      experience: Number(formData.experience),
+    };
+
+    try {
+      const response = await registerTutor(formattedData);
+      if (response.success) {
+        navigate("/login");
+      } else {
+        setError(response.error);
+        // alert(response.error);
+      }
+    } catch (error) {
+      console.error("Error registering tutor", error);
+      setError(error.message);
+      // alert("Error registering tutor", error)
+    }
   };
 
   return (
@@ -48,7 +70,7 @@ const RegisterTutorPage = () => {
             Join our platform and start teaching today!
           </p>
         </motion.div>
-
+        {error && <p className="text-red-500 mt-3">{error}</p>}
         <form className="space-y-5 mt-6" onSubmit={handleSubmit}>
           {/* Full Name */}
           <div className="relative">
@@ -92,22 +114,22 @@ const RegisterTutorPage = () => {
             />
           </div>
 
-          {/* University */}
+          {/* Institution - Fixed name attribute */}
           <div className="relative">
             <FaUniversity className="absolute left-3 top-4 text-gray-400" />
             <input
               type="text"
-              name="university"
-              placeholder="University Name"
+              name="institution"
+              placeholder="Institution Name"
               className="w-full pl-10 pr-4 py-3 border rounded-full focus:ring-2 focus:ring-[#00BFA5] bg-gray-100"
-              value={formData.university}
+              value={formData.institution}
               onChange={handleChange}
               required
             />
           </div>
 
-          {/* Subject - New Field ✅ */}
-          <div className="relative">
+          {/* Subjects - Fixed name attribute */}
+          {/* <div className="relative">
             <FaBook className="absolute left-3 top-4 text-gray-400" />
             <input
               type="text"
@@ -118,7 +140,7 @@ const RegisterTutorPage = () => {
               onChange={handleChange}
               required
             />
-          </div>
+          </div> */}
 
           {/* Experience - New Field ✅ */}
           <div className="relative">
@@ -179,6 +201,35 @@ const RegisterTutorPage = () => {
           </button>
         </div>
       </motion.div>
+      {/* ✅ Modal Terms & Conditions */}
+      {showTerms && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white rounded-lg shadow-lg w-96 p-6 border border-gray-300"
+          >
+            {/* Header */}
+            <h2 className="text-xl font-bold text-center text-gray-900 mb-4">Terms & Conditions</h2>
+
+            {/*Terms & Conditions */}
+            <div className="text-left text-gray-700 space-y-3">
+              <p><span className="font-bold text-[#00BFA5]">Platform Use:</span> This platform connects students and tutors but does not verify tutor qualifications.</p>
+              <p><span className="font-bold text-[#00BFA5]">Payments:</span> All transactions are managed directly between students and tutors. We are not responsible for any payment issues, refunds, or disputes.</p>
+              <p><span className="font-bold text-[#00BFA5]">User Conduct:</span> Users must interact professionally and respectfully. Any inappropriate behavior may result in account suspension.</p>
+              <p><span className="font-bold text-[#00BFA5]">Privacy:</span> We collect only essential information for account creation and matching purposes. No financial data is stored or processed.</p>
+            </div>
+
+            {/* Close button */}
+            <div className="mt-6 flex justify-between">
+              <button onClick={() => setShowTerms(false)} className="px-4 py-2 text-gray-600 font-semibold hover:text-gray-900">Close</button>
+              <button onClick={() => { setAcceptTerms(true); setShowTerms(false); }} className="px-4 py-2 bg-[#00BFA5] text-white font-semibold rounded-full hover:bg-teal-600 transition duration-300">Accept & Close</button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };
