@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { motion } from "framer-motion";
-import { FaUniversity, FaBriefcase } from "react-icons/fa";
+import { FaUniversity, FaBriefcase, FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const TutorCard = ({ tutor }) => {
@@ -31,6 +31,14 @@ const TutorCard = ({ tutor }) => {
         <p className="text-gray-500 text-sm flex items-center gap-2">
           <FaBriefcase className="text-gray-500" /> Experience: {tutor.experience}
         </p>
+
+        {/*Display Rating and Review Count */}
+        <p className="text-gray-700 flex items-center gap-1 mt-1">
+          <FaStar className="text-yellow-400" />
+          <span className="font-semibold">{tutor.rating || "N/A"}</span>
+          <span className="text-gray-500">({tutor.reviewsCount || 0} reviews)</span>
+        </p>
+
         <p className="text-teal-500 font-semibold text-lg">฿{tutor.price} / hour</p>
       </div>
 
@@ -58,6 +66,8 @@ TutorCard.propTypes = {
     experience: PropTypes.string.isRequired,
     price: PropTypes.number.isRequired,
     image: PropTypes.string.isRequired,
+    rating: PropTypes.number, //adding rating
+    reviewsCount: PropTypes.number, //adding reviewscount
   }).isRequired,
 };
 
