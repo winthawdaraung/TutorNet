@@ -160,7 +160,6 @@ const StudentRequestPage = () => {
       className="min-h-screen flex flex-col bg-gray-50"
     >
       <StudentNavbar />
-
       {/* Form Container */}
       <div className="flex-grow flex justify-center items-center px-6 py-12 mt-20">
         <motion.div 
@@ -175,7 +174,6 @@ const StudentRequestPage = () => {
           <p className="text-gray-500 text-center mt-2">
             Fill in the details to request a session.
           </p>
-
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5 mt-6">
             {/* Tutor Name */}

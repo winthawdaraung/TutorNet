@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import tutorProfileDataMock from "../../mockData/TutorProfileData";
+// import tutorProfileDataMock from "../../mockData/TutorProfileData";
 import defaultProfile from "../../assets/tutor/defaultProfile.png";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 
 function TutorProfile() {
   const navigate = useNavigate();
-  const [tutorProfileData, setTutorProfileData] = useState(tutorProfileDataMock);
+  const [tutorProfileData, setTutorProfileData] = useState(null);
   const [reviews, setReviews] = useState([]);  // State for reviews
   const [averageRating, setAverageRating] = useState(0); // State for average rating
 
@@ -42,11 +42,11 @@ function TutorProfile() {
           }
         } else {
           console.error("Failed to fetch tutor profile:", response.error);
-          setTutorProfileData(tutorProfileDataMock);
+          setTutorProfileData(null);
         }
       } catch (error) {
         console.error("Error fetching tutor profile:", error);
-        setTutorProfileData(tutorProfileDataMock);
+        setTutorProfileData(null);
       }
     };
 
@@ -54,7 +54,8 @@ function TutorProfile() {
   }, []);
 
   if (!tutorProfileData) {
-    return <div>Loading...</div>;
+    // return <div>Loading...</div>;
+    return <div>No Data Found</div>
   }
   // useEffect(() => {
   //   window.scrollTo(0, 0);
@@ -64,8 +65,8 @@ function TutorProfile() {
     fullName,
     institution,
     qualification,
-    rating,
-    reviewsCount,
+    // rating,
+    // reviewsCount,
     aboutMe,
     aboutMySession,
     cv,

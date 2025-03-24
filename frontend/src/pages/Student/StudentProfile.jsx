@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import StudentNavbar from "../../Components/Student/StudentNavbar/StudentNavbar";
 import Footer from "../../Components/homeComponents/footer/Footer";
-import userProfileDataMock from "../../mockData/Student/StudentProfileData2";
+// import userProfileDataMock from "../../mockData/Student/StudentProfileData2";
 import defaultProfile from "../../assets/tutor/defaultProfile.png";
 
 import { getStudentProfile } from "../../handle/student";
@@ -19,7 +19,7 @@ import { Placeholder } from "react-select/animated";
 function StudentProfile() {
   const navigate = useNavigate();
 
-  const [userProfileData, setUserProfileData] = useState(userProfileDataMock);
+  const [userProfileData, setUserProfileData] = useState(null);
 
   const fetchProfile = async () => {
     try {
@@ -28,11 +28,11 @@ function StudentProfile() {
         setUserProfileData(response.data);
       } else {
         console.error("Failed to fetch student profile:", response.error);
-        setUserProfileData(userProfileDataMock);
+        setUserProfileData(null);
       }
     } catch (error) {
       console.error("Error fetching student profile:", error);
-      setUserProfileData(userProfileDataMock);
+      setUserProfileData(null);
     }
   };
 
