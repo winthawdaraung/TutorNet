@@ -18,7 +18,6 @@ Edubridge is a web platform that connects students with tutors. Students can sea
 - **Backend**: Node.js with Express.js
 - **Database**: MongoDB
 - **Authentication**: JWT
-- **State Management**: Context API / Redux (if applicable)
 - **Cloud Storage**: Cloudinary
 - **Email Service**: Gmail SMTP
 
