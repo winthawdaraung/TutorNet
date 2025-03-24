@@ -40,6 +40,7 @@ npm install
 ### 3️⃣ Run the development servers (Backend & Frontend)
 Run the project:
 ```sh
+cd backend
 npm run dev
 ```
 
