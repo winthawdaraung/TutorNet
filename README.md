@@ -35,15 +35,7 @@ npm install
 cd ../frontend
 npm install
 ```
-
-### 3️⃣ Run the development servers (Backend & Frontend)
-Run the project:
-```sh
-cd backend
-npm run dev
-```
-
-### 4️⃣ Environment Variables
+### 3️⃣ Environment Variables
 Create a `.env` file in the **backend** folder and configure the following:
 ```env
 MONGO_URI=
@@ -60,6 +52,13 @@ JWT_RESET_SECRET=EduBridgeReset
 FRONTEND_URL=http://localhost:5173
 API_URL=http://localhost:5000
 ```
+### 4️⃣ Run the development servers (Backend & Frontend)
+Run the project:
+```sh
+cd backend
+npm run dev
+```
+
 
 ## 🖥️ Usage
 1. **Students** can:
