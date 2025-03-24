@@ -2,7 +2,6 @@ import Student from "../models/studentsModel.js";
 import Tutor from "../models/tutorsModel.js";
 import { hashPassword, comparePassword, generateToken, generateResetToken, sendPasswordResetEmail } from "../config/utils.js";
 
-// Find user in both Student and Tutor collections
 const findUserByEmail = async (email) => {
     const student = await Student.findOne({ email });
     if (student) return { user: student, role: 'student' };
@@ -13,7 +12,6 @@ const findUserByEmail = async (email) => {
     return null;
 };
 
-// Find user by reset token
 const findUserByResetToken = async (token) => {
     const student = await Student.findOne({
         resetPasswordToken: token,
@@ -34,7 +32,6 @@ export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
         
-        // Find user in both collections
         const userInfo = await findUserByEmail(email);
         if (!userInfo) {
             return res.status(401).json({
@@ -45,7 +42,6 @@ export const login = async (req, res) => {
 
         const { user, role } = userInfo;
 
-        // Check password
         const isMatch = await comparePassword(password, user.password);
         if (!isMatch) {
             return res.status(401).json({
@@ -54,7 +50,6 @@ export const login = async (req, res) => {
             });
         }
 
-        // Generate token
         const token = generateToken(user._id, role);
 
         res.status(200).json({
@@ -106,12 +101,10 @@ export const forgotPassword = async (req, res) => {
         const resetToken = generateResetToken();
         const user = userInfo.user;
 
-        // Save reset token and expiry
         user.resetPasswordToken = resetToken;
         user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
         await user.save();
 
-        // Send reset email
         await sendPasswordResetEmail(email, resetToken);
 
         res.status(200).json({
@@ -133,7 +126,6 @@ export const resetPassword = async (req, res) => {
     try {
         const { token, newPassword } = req.body;
         
-        // Find user with valid reset token
         const userInfo = await findUserByResetToken(token);
         if (!userInfo) {
             return res.status(400).json({
@@ -144,7 +136,6 @@ export const resetPassword = async (req, res) => {
 
         const user = userInfo.user;
 
-        // Hash new password and save
         user.password = await hashPassword(newPassword);
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;

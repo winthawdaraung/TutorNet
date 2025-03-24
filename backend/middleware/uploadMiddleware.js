@@ -1,6 +1,5 @@
 import multer from 'multer';
 
-// Use memory storage instead of disk storage for Cloudinary
 const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {

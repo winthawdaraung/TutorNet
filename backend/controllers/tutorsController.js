@@ -516,7 +516,7 @@ export const acceptStudentRequest = async (req, res) => {
                         subject: formData.subject,
                         time: formData.time,
                         date: formData.date,
-                        profileImageUrl: tutor.profileImageUrl || 'https://via.placeholder.com/150',
+                        profileImageUrl: tutor.profileImageUrl,
                         studyLink: formData.studyLink
                     }
                 }

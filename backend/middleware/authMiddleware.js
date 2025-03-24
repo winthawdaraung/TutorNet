@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 import Student from '../models/studentsModel.js';
 import Tutor from '../models/tutorsModel.js';
-import Review from "../models/reviewsModel.js";
 
 export const protect = async (req, res, next) => {
     let token;
@@ -41,15 +40,3 @@ export const protect = async (req, res, next) => {
         });
     }
 };
-
-// Admin middleware
-export const admin = async (req, res, next) => {
-    if (req.user && req.user.role === 'admin') {
-        next();
-    } else {
-        res.status(403).json({
-            success: false,
-            message: 'Not authorized as an admin'
-        });
-    }
-}; 
