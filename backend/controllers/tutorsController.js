@@ -243,7 +243,9 @@ export const updateTutorProfile = async (req, res) => {
 // Searching for tutors with filters and show result according to rating, view count, and popularity
 export const searchTutors = async (req, res) => {
     try {
-        let { query, subject, sort, price, experience, page=1, limit = 3 } = req.query;
+        let { query, subject, sort, price, experience, page=1, limit = 3, sInstitution } = req.query;
+        console.log('sInstitution:', sInstitution);
+        
 
         page = parseInt(page) || 1;
         limit = parseInt(limit) || 3;
@@ -294,7 +296,8 @@ export const searchTutors = async (req, res) => {
                     reviewsCount: { $ifNull: ["$reviewsCount", 0] },
                     viewCount: { $ifNull: ["$viewCount", 0] },
                     profileImageUrl: 1,
-                    createdAt: 1
+                    createdAt: 1,
+                    sameUniversity: { $cond: { if: { $eq: ["$institution", sInstitution] }, then: 1, else: 0 } }
                 }
             }
         ];
@@ -305,6 +308,7 @@ export const searchTutors = async (req, res) => {
             pipeline.push({ 
                 $sort: { 
                     // institution: 1,
+                    sameUniversity: -1,  // Sort by same university first
                     rating: -1,           // Primary sort: Higher ratings first
                     reviewsCount: -1      // Secondary sort: More reviews first (when ratings are equal)
                 }
@@ -315,6 +319,7 @@ export const searchTutors = async (req, res) => {
             pipeline.push({ 
                 $sort: { 
                     // institution: 1,
+                    sameUniversity: -1,  // Sort by same university first
                     reviewCount: -1,
                     rating: -1 
                 } 
