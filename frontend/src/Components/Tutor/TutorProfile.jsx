@@ -84,7 +84,7 @@ function TutorProfile() {
     window.scrollTo(0, 0); // เลื่อนขึ้นบนสุดของหน้า
   };
 
-  // ✅ Star rating renderer with animation
+  // Star rating renderer with animation
   const renderStars = (rating) => {
     const fullStars = Math.floor(rating);
     const halfStar = rating % 1 !== 0;
@@ -220,8 +220,7 @@ function TutorProfile() {
             {reviews && reviews.length > 0 ? (
               <div>
                 {reviews
-                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) //sort by date the latest review first
-                .slice(0,3) //only the first 3 reviews
+                // .slice(-3)
                 .map((review, index) => (
                   <div key={index} className="border-b py-2">
                     <div className="flex items-center">

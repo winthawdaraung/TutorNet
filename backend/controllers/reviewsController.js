@@ -37,6 +37,11 @@ export const addReview = async (req, res) => {
             rating: averageRating
         });
 
+        // const result = await Student.findOneAndUpdate(
+        //             { _id: studentId, },
+        //             { $pull: { notification: { tutorId: tu } } },
+        //             { new: true }
+        //         );
         res.status(201).json({ success: true, message: "Review added successfully." });
     } catch (error) {
         res.status(500).json({ error: "Server error: " + error.message });

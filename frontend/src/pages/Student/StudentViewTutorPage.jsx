@@ -164,8 +164,8 @@ function StudentViewTutorPage() {
             viewport={{ once: true, amount: 0.3 }}
           >
             {reviews
-            .sort((a, b) => new Date(b.date) - new Date(a.date)) //Sort reviews by date, the latest first reviews
-            .slice(0,3) //only 3 first reviews
+            // .sort((a, b) => new Date(b.date) - new Date(a.date)) //Sort reviews by date, the latest first reviews
+            // .slice(0,3) //only 3 first reviews
             .map((review) => (
               <motion.div
                 key={review.id}

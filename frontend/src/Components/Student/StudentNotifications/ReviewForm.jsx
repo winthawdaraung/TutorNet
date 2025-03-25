@@ -68,14 +68,14 @@ const ReviewForm = ({ notification, onClose, onSubmit }) => {
       return;
     }
 
-    // ✅ Get Current Date & Time
+    // Get Current Date & Time
     const reviewDate = new Date().toISOString(); // e.g., "2024-02-26T14:30:00.000Z"
 
     onSubmit({ 
       tutorId: notification.tutorId, 
       rating, 
       comment,
-      date: reviewDate // ✅ Send Date to Backend
+      date: reviewDate // Send Date to Backend
     });
 
     onClose();
@@ -135,7 +135,7 @@ const ReviewForm = ({ notification, onClose, onSubmit }) => {
         )}
         </div>
 
-        {/* ✅ Display Submission Date and wordscount */}
+        {/* Display Submission Date and wordscount */}
         <div className="flex justify-between text-sm mt-2">
           <p className="text-gray-500 text-sm mt-2">
             Review Date: {new Date().toLocaleDateString()} {/* e.g., "26/02/2024" */}

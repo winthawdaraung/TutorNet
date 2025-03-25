@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
+
 import PropTypes from "prop-types";
 
 const NotificationCard = ({ notification, onLeaveReview, onViewResponse }) => {
   console.log("In notification card: ", notification);
+  // const tutor = getTutorProfile(notification.tutorId).data;
+  // console.log("Tutor in notification card: ", tutor);
   return (
     <motion.div
       className="bg-white border border-gray-200 rounded-xl p-6 mb-6 flex flex-col md:flex-row items-center 
@@ -11,14 +14,14 @@ const NotificationCard = ({ notification, onLeaveReview, onViewResponse }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      {/* ✅ รูปภาพ - อยู่ตรงกลางในแนวแกน Y */}
+      {/* รูปภาพ - อยู่ตรงกลางในแนวแกน Y */}
       <img
         src={notification.tutorImage || "https://via.placeholder.com/128"}
         alt="Tutor"
         className="w-32 h-32 object-cover rounded-xl border border-gray-200 shadow-sm"
       />
 
-      {/* ✅ ข้อความ - จัดให้อยู่ตรงกลางกับรูปภาพ */}
+      {/* ข้อความ - จัดให้อยู่ตรงกลางกับรูปภาพ */}
       <div className="flex flex-col flex-grow ml-6 h-full justify-center">
         <div>
           <p className="mb-1">
@@ -36,7 +39,7 @@ const NotificationCard = ({ notification, onLeaveReview, onViewResponse }) => {
         </div>
       </div>
 
-      {/* ✅ ปุ่มอยู่ขวาสุดของการ์ดและอยู่ล่างสุดเสมอ (ไม่เปลี่ยนแปลง) */}
+      {/* ปุ่มอยู่ขวาสุดของการ์ดและอยู่ล่างสุดเสมอ (ไม่เปลี่ยนแปลง) */}
       <div className="flex justify-end gap-4 mt-auto">
         <button
           onClick={() => onLeaveReview(notification)}
