@@ -11,13 +11,13 @@ import {
 } from "react-icons/fa";
 import StudentNavbar from "../../Components/Student/StudentNavbar/StudentNavbar";
 import Footer from "../../Components/homeComponents/footer/Footer";
-// import userProfileDataMock from "../../mockData/Student/StudentProfileData2";
+import userProfileDataMock from "../../mockData/Student/StudentProfileData2";
 import defaultProfile from "../../assets/tutor/defaultProfile.png";
 import { getStudentProfile, updateStudentProfile } from "../../handle/student";
 
 function EditStudentProfile() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState(null);
+  const [formData, setFormData] = useState(userProfileDataMock);
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewImage, setPreviewImage] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -36,11 +36,11 @@ function EditStudentProfile() {
         }
       } else {
         console.error("Failed to fetch student profile:", response.error);
-        setFormData(null);
+        setFormData(userProfileDataMock);
       }
     } catch (error) {
       console.error("Error fetching student profile:", error);
-      setFormData(null);
+      setFormData(userProfileDataMock);
     }
   };
 

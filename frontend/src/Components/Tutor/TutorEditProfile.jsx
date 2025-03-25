@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import CreatableSelect from "react-select/creatable";
-// import tutorProfileDataMock from "../../mockData/TutorProfileData";
+import tutorProfileDataMock from "../../mockData/TutorProfileData";
 import defaultProfile from "../../assets/tutor/defaultProfile.png";
 import { updateTutorProfile, getTutorProfile } from "../../handle/tutor";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 
 function EditProfile() {
   const navigate = useNavigate();
-  const [tutorProfileData, setTutorProfileData] = useState(null);
+  const [tutorProfileData, setTutorProfileData] = useState(tutorProfileDataMock);
   const [isLoading, setIsLoading] = useState(false);
   
   // Destructure tutorProfileData after initializing it
@@ -110,11 +110,11 @@ function EditProfile() {
           setSubjects(subjectsOffered);
         } else {
           console.error("Failed to fetch tutor profile:", response.error);
-          setTutorProfileData(null); // Use mock data if fetching fails
+          setTutorProfileData(tutorProfileDataMock); // Use mock data if fetching fails
         }
       } catch (error) {
         console.error("Error fetching tutor profile:", error);
-        setTutorProfileData(null);
+        setTutorProfileData(tutorProfileDataMock);
       }
     };
 

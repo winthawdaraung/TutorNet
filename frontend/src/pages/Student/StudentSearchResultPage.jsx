@@ -9,6 +9,7 @@ import { FaSearch } from "react-icons/fa";
 //import StudentSearchPage from "./StudentSearchPage";
 import TutorCard from "../../Components/Student/StudentSearchResult/TutorCard";
 import Pagination from "../../Components/Student/StudentSearchResult/Pagination";
+import { getStudentProfile } from "../../handle/student";
 
 const tutorsPerPage = 3; // ✅ Number of tutors per page
 
@@ -31,6 +32,9 @@ const StudentSearchResultPage = () => {
     }
   },[location.search]);
 
+  const student = getStudentProfile();
+  // console.log("Student in result:", student);
+
   // //Search for tutors
   const fetchTutors = async (query, page = 1) => {
     console.log("Fetching tutors for:", query, "Page:", page);
@@ -40,9 +44,12 @@ const StudentSearchResultPage = () => {
         query, 
         page, 
         limit: tutorsPerPage,
-        sort: "ratingAndReviews"
+        // sort: "ratingAndReviews",
+        sort: "rating",
+        sInstitution: (await student).data.institution,
       },
     });
+    console.log("Tutors:", response.data.tutors);
 
     setResults(response.data.tutors);
     setTotalPages(response.data.totalPages);
