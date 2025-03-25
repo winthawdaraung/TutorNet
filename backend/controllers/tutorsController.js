@@ -304,13 +304,17 @@ export const searchTutors = async (req, res) => {
             // Sort by rating first, then by reviewsCount for entries with the same rating
             pipeline.push({ 
                 $sort: { 
+                    // institution: 1,
                     rating: -1,           // Primary sort: Higher ratings first
                     reviewsCount: -1      // Secondary sort: More reviews first (when ratings are equal)
-                } 
+                }
+
+
             });
         } else if (sort === "reviewCount") {
             pipeline.push({ 
                 $sort: { 
+                    // institution: 1,
                     reviewCount: -1,
                     rating: -1 
                 } 
